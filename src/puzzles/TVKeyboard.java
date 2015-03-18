@@ -9,8 +9,11 @@ public class TVKeyboard {
 	}
 
 	private final int width;
-	private final int height;
 	private Queue<Key> sequence;
+	private int currentRow;
+	private int currentCol;
+	private int prevRow;
+	private int prevCol;
 
 	public TVKeyboard(String string, int width) throws Exception {
 		if (string == null || width < 1) {
@@ -18,38 +21,66 @@ public class TVKeyboard {
 		}
 
 		this.width = width;
-		height = 26 / width + 1;
 		if (string.length() > 0) {
 			sequence = new LinkedList<>();
-			int prevRow = 0;
-			int prevCol = 0;
+			prevRow = 0;
+			prevCol = 0;
 			int a = (int) 'a'; // Used to diff
+			char prevChar = 'a';
+
 			for (int i = 0; i < string.length(); i++) {
 				char c = string.charAt(i);
-				int cInt = (int) c;
-				int currentRow = (cInt - a) / this.width;
-				int currentCol = (cInt - a) % this.width;
-				int colDiff = currentCol - prevCol;
-				int rowDiff = currentRow - prevRow;
+				if (c != ' ') {
+					int cInt = (int) c;
+					currentRow = (cInt - a) / this.width;
+					currentCol = (cInt - a) % this.width;
 
-				if (prevRow + rowDiff >= height) {
-					// If moving vertically off keyboard, do horizontal first
-				} else {
-					// Do vertical movement first
+					if (!(cInt + width < 26)) {
+						// If moving vertically off keyboard, do horizontal
+						// first
+						moveHorizontally(prevChar, c);
+						moveVertically(prevChar, c);
+					} else {
+						// Do vertical movement first
+						moveVertically(prevChar, c);
+						moveHorizontally(prevChar, c);
+					}
+
+					sequence.add(Key.ENTER);
+					prevChar = c;
+					prevRow = currentRow;
+					prevCol = currentCol;
 				}
 			}
 		}
 	}
 
-	private void moveVertically() {
-
+	private void moveVertically(char prevC, char currC) {
+		int rowDiff = currentRow - prevRow;
+		Key key = Key.DOWN;
+		if (rowDiff < 0) {
+			key = Key.UP;
+		}
+		for (int i = 0; i < Math.abs(rowDiff); i++) {
+			sequence.add(key);
+		}
 	}
 
-	private void moveHorizontally() {
-
+	private void moveHorizontally(char prevC, char currC) {
+		int colDiff = currentCol - prevCol;
+		Key key = Key.RIGHT;
+		if (colDiff < 0) {
+			key = Key.LEFT;
+		}
+		for (int i = 0; i < Math.abs(colDiff); i++) {
+			sequence.add(key);
+		}
 	}
 
-	public Queue<Key> getSequence() {
-		return sequence;
+	public void getSequence() {
+		while (!sequence.isEmpty()) {
+			System.out.print(sequence.remove().toString() + ", ");
+		}
+		System.out.println("");
 	}
 }
