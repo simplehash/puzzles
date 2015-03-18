@@ -15,39 +15,36 @@ public class MatrixTraverse {
 		}
 	}
 
-	public boolean traverse() {
+	public boolean traverse() throws Exception {
 		if (!matrix[0][0].equals("@")) {
 			Cell cell = new Cell(matrix[0][0], 0, 0);
 			Direction prevDirection = null;
 			Direction currDirection = null;
-			try {
-				while (!cell.getValue().equals("@")) {
-					String value = cell.getValue();
-					System.out.println(value);
-					if (value.equals(" ")) {
-						cell.move(prevDirection);
-					} else if (value.equals("^")) {
-						currDirection = Direction.UP;
-						cell.move(currDirection);
-						prevDirection = currDirection;
-					} else if (value.equals(">")) {
-						currDirection = Direction.RIGHT;
-						cell.move(currDirection);
-						prevDirection = currDirection;
-					} else if (value.equals("v")) {
-						currDirection = Direction.DOWN;
-						cell.move(currDirection);
-						prevDirection = currDirection;
-					} else if (value.equals("<")) {
-						currDirection = Direction.LEFT;
-						cell.move(currDirection);
-						prevDirection = currDirection;
-					}
+
+			while (!cell.getValue().equals("@")) {
+				String value = cell.getValue();
+				System.out.print(value);
+				if (value.equals(" ")) {
+					cell.move(prevDirection);
+				} else if (value.equals("^")) {
+					currDirection = Direction.UP;
+					cell.move(currDirection);
+					prevDirection = currDirection;
+				} else if (value.equals(">")) {
+					currDirection = Direction.RIGHT;
+					cell.move(currDirection);
+					prevDirection = currDirection;
+				} else if (value.equals("v")) {
+					currDirection = Direction.DOWN;
+					cell.move(currDirection);
+					prevDirection = currDirection;
+				} else if (value.equals("<")) {
+					currDirection = Direction.LEFT;
+					cell.move(currDirection);
+					prevDirection = currDirection;
 				}
-			} catch (Exception e) {
-				System.out.println("Exception: " + e);
-				return false;
 			}
+
 		}
 		System.out.println("Success!");
 		return true;
