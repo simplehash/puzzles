@@ -7,11 +7,11 @@ import java.util.*;
 
 public class SimpleDB {
 	private static Map<String, String> dbMap; // Name, value
-	private static int isTransaction;
+	private static int transactionDepth;
 
 	public static void main(String[] args) throws Exception {
 		dbMap = new HashMap<>();
-		isTransaction = 0;
+		transactionDepth = 0;
 
 		begin();
 	}
@@ -73,7 +73,7 @@ public class SimpleDB {
 				case "end":
 					System.exit(0);
 				case "begin":
-					isTransaction++;
+					transactionDepth++;
 					begin();
 					break;
 				case "rollback":
@@ -90,8 +90,8 @@ public class SimpleDB {
 									prevState.get(rollBackCommand[1]));
 						}
 					}
-					if (isTransaction > 0) {
-						isTransaction--;
+					if (transactionDepth > 0) {
+						transactionDepth--;
 						return;
 					}
 					System.out.println("NO TRANSACTION");
@@ -99,8 +99,8 @@ public class SimpleDB {
 				case "commit":
 					// Break the recursion if its within a transaction, else
 					// loop
-					if (isTransaction > 0) {
-						isTransaction--;
+					if (transactionDepth > 0) {
+						transactionDepth--;
 						return;
 					}
 					System.out.println("NO TRANSACTION");
