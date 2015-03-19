@@ -8,12 +8,16 @@ import java.util.*;
 public class SimpleDB {
 	private static Map<String, String> dbMap; // Name, value
 	private static int transactionDepth;
+	private static boolean isCommit = false;
 
 	public static void main(String[] args) throws Exception {
 		dbMap = new HashMap<>();
 		transactionDepth = 0;
 
-		begin();
+		while (true) {
+			begin();
+			isCommit = false;
+		}
 	}
 
 	private static void numequalto(String desiredValue) throws Exception {
@@ -22,7 +26,7 @@ public class SimpleDB {
 		}
 		int count = 0;
 		for (String value : dbMap.values()) {
-			if (value.equals(desiredValue)) {
+			if (value != null && value.equals(desiredValue)) {
 				count++;
 			}
 		}
@@ -54,6 +58,9 @@ public class SimpleDB {
 	}
 
 	private static void begin() throws Exception {
+		if (isCommit) {
+			return;
+		}
 		Stack<String[]> commands = new Stack<>();
 		Map<String, String> prevState = new HashMap<>();
 
@@ -100,7 +107,7 @@ public class SimpleDB {
 					// Break the recursion if its within a transaction, else
 					// loop
 					if (transactionDepth > 0) {
-						transactionDepth--;
+						isCommit = true;
 						return;
 					}
 					System.out.println("NO TRANSACTION");
