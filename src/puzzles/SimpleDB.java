@@ -6,17 +6,6 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class SimpleDB {
-	/*
-	 * SET name value – Set the variable name to the value value. Neither
-	 * variable names nor values will contain spaces. GET name – Print out the
-	 * value of the variable name, or NULL if that variable is not set. UNSET
-	 * name – Unset the variable name, making it just like that variable was
-	 * never set. NUMEQUALTO value – Print out the number of variables that are
-	 * currently set to value. If no variables equal that value, print 0. END –
-	 * Exit the program. Your program will always receive this as its last
-	 * command.
-	 */
-
 	private static Map<String, String> dbMap; // Name, value
 	private static int isTransaction;
 
@@ -25,36 +14,6 @@ public class SimpleDB {
 		isTransaction = 0;
 
 		begin();
-	}
-
-	private static void io(String[] command, Map<String, String> prevCommand)
-			throws Exception {
-		switch (command[0]) {
-		case "set":
-			if (command.length == 3) {
-				if (dbMap.containsKey(command[1])) {
-					prevCommand.put(command[1], dbMap.get(command[1]));
-				}
-				set(command[1], command[2]);
-			}
-			break;
-		case "get":
-			if (command.length == 2) {
-				get(command[1]);
-			}
-			break;
-		case "unset":
-			if (command.length == 2) {
-				prevCommand.put(command[1], dbMap.get(command[1]));
-				unset(command[1]);
-			}
-			break;
-		case "numequalto":
-			if (command.length == 2) {
-				numequalto(command[1]);
-			}
-			break;
-		}
 	}
 
 	private static void numequalto(String command) throws Exception {
@@ -97,8 +56,8 @@ public class SimpleDB {
 	private static void begin() throws Exception {
 		Stack<String[]> commands = new Stack<>();
 		Map<String, String> prevState = new HashMap<>();
-		boolean done = false;
-		while (!done) {
+
+		while (true) {
 			System.out.println("SimpleDB> ");
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
@@ -146,8 +105,29 @@ public class SimpleDB {
 					}
 					System.out.println("NO TRANSACTION");
 					break;
-				default:
-					io(command, prevState);
+				case "set":
+					if (command.length == 3) {
+						if (dbMap.containsKey(command[1])) {
+							prevState.put(command[1], dbMap.get(command[1]));
+						}
+						set(command[1], command[2]);
+					}
+					break;
+				case "get":
+					if (command.length == 2) {
+						get(command[1]);
+					}
+					break;
+				case "unset":
+					if (command.length == 2) {
+						prevState.put(command[1], dbMap.get(command[1]));
+						unset(command[1]);
+					}
+					break;
+				case "numequalto":
+					if (command.length == 2) {
+						numequalto(command[1]);
+					}
 					break;
 				}
 			}
