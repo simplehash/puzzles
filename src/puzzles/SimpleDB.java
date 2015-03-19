@@ -87,7 +87,7 @@ public class SimpleDB {
 	}
 
 	private static void set(String name, String value) throws Exception {
-		if (name == null || value == null) {
+		if (name == null) {
 			throw new Exception("Command ill-formatted");
 		}
 
@@ -99,10 +99,15 @@ public class SimpleDB {
 		Map<String, String> prevState = new HashMap<>();
 		boolean done = false;
 		while (!done) {
-			System.out.println("SimpleDB prompt> ");
+			System.out.println("SimpleDB> ");
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
-			String[] command = br.readLine().toLowerCase().split(" ");
+			String input = br.readLine();
+			if (input == null) {
+				return;
+			}
+			String[] command = input.toLowerCase().split(" ");
+
 			if (command.length > 0) {
 				commands.push(command);
 				switch (command[0]) {
@@ -113,7 +118,6 @@ public class SimpleDB {
 					begin();
 					break;
 				case "rollback":
-					isTransaction--;
 					while (!commands.isEmpty()) {
 						// Only run the command if it makes a difference in
 						// state
@@ -127,14 +131,21 @@ public class SimpleDB {
 									prevState.get(rollBackCommand[1]));
 						}
 					}
+					if (isTransaction > 0) {
+						isTransaction--;
+						return;
+					}
+					System.out.println("NO TRANSACTION");
 					break;
 				case "commit":
 					// Break the recursion if its within a transaction, else
 					// loop
-					if (--isTransaction < 1) {
-						break;
+					if (isTransaction > 0) {
+						isTransaction--;
+						return;
 					}
-					return;
+					System.out.println("NO TRANSACTION");
+					break;
 				default:
 					io(command, prevState);
 					break;
