@@ -16,33 +16,33 @@ public class SimpleDB {
 		begin();
 	}
 
-	private static void numequalto(String command) throws Exception {
-		if (command == null) {
+	private static void numequalto(String desiredValue) throws Exception {
+		if (desiredValue == null) {
 			throw new Exception("Command ill-formatted");
 		}
 		int count = 0;
 		for (String value : dbMap.values()) {
-			if (value.equals(command)) {
+			if (value.equals(desiredValue)) {
 				count++;
 			}
 		}
 		System.out.println(count);
 	}
 
-	private static void unset(String command) throws Exception {
-		if (command == null) {
+	private static void unset(String name) throws Exception {
+		if (name == null) {
 			throw new Exception("Command ill-formatted");
 		}
 
-		dbMap.remove(command);
+		dbMap.remove(name);
 	}
 
-	private static void get(String command) throws Exception {
-		if (command == null) {
+	private static void get(String name) throws Exception {
+		if (name == null) {
 			throw new Exception("Command ill-formatted");
 		}
 
-		System.out.println(dbMap.get(command));
+		System.out.println(dbMap.get(name));
 	}
 
 	private static void set(String name, String value) throws Exception {
