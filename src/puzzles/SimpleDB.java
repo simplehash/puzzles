@@ -9,10 +9,12 @@ public class SimpleDB {
 	private static Map<String, String> dbMap; // Name, value
 	private static int transactionDepth;
 	private static boolean isCommit = false;
+	private static Map<String, Integer> valueCount;
 
 	public static void main(String[] args) throws Exception {
 		dbMap = new HashMap<>();
 		transactionDepth = 0;
+		valueCount = new HashMap<>();
 
 		while (true) {
 			begin();
@@ -24,11 +26,10 @@ public class SimpleDB {
 		if (desiredValue == null) {
 			throw new Exception("Command ill-formatted");
 		}
+
 		int count = 0;
-		for (String value : dbMap.values()) {
-			if (value != null && value.equals(desiredValue)) {
-				count++;
-			}
+		if (valueCount.containsKey(desiredValue)) {
+			count = valueCount.get(desiredValue);
 		}
 		System.out.println(count);
 	}
@@ -38,6 +39,9 @@ public class SimpleDB {
 			throw new Exception("Command ill-formatted");
 		}
 
+		String value = dbMap.get(name);
+		int count = valueCount.get(value);
+		valueCount.replace(value, --count);
 		dbMap.remove(name);
 	}
 
@@ -55,6 +59,11 @@ public class SimpleDB {
 		}
 
 		dbMap.put(name, value);
+		int count = 0;
+		if (valueCount.containsKey(value)) {
+			count = valueCount.get(value);
+		}
+		valueCount.put(value, ++count);
 	}
 
 	private static void begin() throws Exception {
@@ -89,12 +98,26 @@ public class SimpleDB {
 						// state
 						String[] rollBackCommand = commands.pop();
 
-						if (rollBackCommand[0].equals("set")) {
-							set(rollBackCommand[1],
-									prevState.get(rollBackCommand[1]));
-						} else if (rollBackCommand[0].equals("unset")) {
-							set(rollBackCommand[1],
-									prevState.get(rollBackCommand[1]));
+						if (rollBackCommand[0].equals("set")
+								|| rollBackCommand[0].equals("unset")) {
+							String name = rollBackCommand[1];
+							String oldValue = dbMap.get(name); // To unset
+							String value = prevState.get(rollBackCommand[1]); // To
+																				// set
+
+							int oldCount = valueCount.get(oldValue);
+
+							valueCount.replace(oldValue, --oldCount);
+							if (oldCount == 0) {
+								valueCount.remove(oldValue);
+							}
+
+							int newCount = 0;
+							if (valueCount.containsKey(value)) {
+								newCount = valueCount.get(value);
+							}
+							valueCount.put(value, ++newCount);
+							set(name, value);
 						}
 					}
 					if (transactionDepth > 0) {
