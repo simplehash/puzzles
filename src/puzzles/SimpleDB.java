@@ -17,125 +17,129 @@ public class SimpleDB {
 	 * command.
 	 */
 
-	private static HashMap<String, String> dbMap; // Name, value
-	private static String[] command;
-
-	/*
-	 * Outer stack contains transaction blocks, inner stack contains commands,
-	 * String[] is an individual command
-	 */
-	private static Stack<Stack<String[]>> commands;
+	private static Map<String, String> dbMap; // Name, value
+	private static int isTransaction;
 
 	public static void main(String[] args) throws Exception {
 		dbMap = new HashMap<>();
-		commands = new Stack<>();
+		isTransaction = 0;
 
-		outerLoop: while (true) {
-			System.out.println("SimpleDB prompt> ");
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					System.in));
-			command = br.readLine().toLowerCase().split(" ");
-			if (command.length > 0) {
-				switch (command[0]) {
-				case "end":
-					break outerLoop;
-				case "begin":
-					begin();
-					break;
-				case "rollback":
-					rollback();
-					break;
-				case "commit":
-					commit();
-					break;
-				default:
-					io();
-					break;
-				}
-			}
-		}
+		begin();
 	}
 
-	private static void io() throws Exception {
+	private static void io(String[] command, Map<String, String> prevCommand)
+			throws Exception {
 		switch (command[0]) {
 		case "set":
 			if (command.length == 3) {
-				set();
+				if (dbMap.containsKey(command[1])) {
+					prevCommand.put(command[1], dbMap.get(command[1]));
+				}
+				set(command[1], command[2]);
 			}
 			break;
 		case "get":
 			if (command.length == 2) {
-				get();
+				get(command[1]);
 			}
 			break;
 		case "unset":
 			if (command.length == 2) {
-				unset();
+				prevCommand.put(command[1], dbMap.get(command[1]));
+				unset(command[1]);
 			}
 			break;
 		case "numequalto":
 			if (command.length == 2) {
-				numequalto();
+				numequalto(command[1]);
 			}
 			break;
 		}
 	}
 
-	private static void numequalto() throws Exception {
-		if (command.length != 2) {
+	private static void numequalto(String command) throws Exception {
+		if (command == null) {
 			throw new Exception("Command ill-formatted");
 		}
-
-		String value = command[1];
 		int count = 0;
-		for (String eachValue : dbMap.values()) {
-			if (eachValue.equals(value)) {
+		for (String value : dbMap.values()) {
+			if (value.equals(command)) {
 				count++;
 			}
 		}
 		System.out.println(count);
 	}
 
-	private static void unset() throws Exception {
-		if (command.length != 2) {
+	private static void unset(String command) throws Exception {
+		if (command == null) {
 			throw new Exception("Command ill-formatted");
 		}
 
-		String name = command[1];
-		dbMap.remove(name);
+		dbMap.remove(command);
 	}
 
-	private static void get() throws Exception {
-		if (command.length != 2) {
+	private static void get(String command) throws Exception {
+		if (command == null) {
 			throw new Exception("Command ill-formatted");
 		}
 
-		String name = command[1];
-		System.out.println(dbMap.get(name));
+		System.out.println(dbMap.get(command));
 	}
 
-	private static void set() throws Exception {
-		if (command.length != 3) {
+	private static void set(String name, String value) throws Exception {
+		if (name == null || value == null) {
 			throw new Exception("Command ill-formatted");
 		}
-		String name = command[1];
-		String value = command[2];
 
 		dbMap.put(name, value);
 	}
 
-	private static void commit() {
-		// TODO Auto-generated method stub
+	private static void begin() throws Exception {
+		Stack<String[]> commands = new Stack<>();
+		Map<String, String> prevState = new HashMap<>();
+		boolean done = false;
+		while (!done) {
+			System.out.println("SimpleDB prompt> ");
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					System.in));
+			String[] command = br.readLine().toLowerCase().split(" ");
+			if (command.length > 0) {
+				commands.push(command);
+				switch (command[0]) {
+				case "end":
+					System.exit(0);
+				case "begin":
+					isTransaction++;
+					begin();
+					break;
+				case "rollback":
+					isTransaction--;
+					while (!commands.isEmpty()) {
+						// Only run the command if it makes a difference in
+						// state
+						String[] rollBackCommand = commands.pop();
 
-	}
-
-	private static void rollback() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void begin() {
-		// TODO Auto-generated method stub
-
+						if (rollBackCommand[0].equals("set")) {
+							set(rollBackCommand[1],
+									prevState.get(rollBackCommand[1]));
+						} else if (rollBackCommand[0].equals("unset")) {
+							set(rollBackCommand[1],
+									prevState.get(rollBackCommand[1]));
+						}
+					}
+					break;
+				case "commit":
+					// Break the recursion if its within a transaction, else
+					// loop
+					if (--isTransaction < 1) {
+						break;
+					}
+					return;
+				default:
+					io(command, prevState);
+					break;
+				}
+			}
+		}
 	}
 }
