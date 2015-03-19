@@ -29,15 +29,16 @@ public class SimpleDB {
 	public static void main(String[] args) throws Exception {
 		dbMap = new HashMap<>();
 		commands = new Stack<>();
-		boolean end = false;
 
-		outerLoop: while (!end) {
+		outerLoop: while (true) {
 			System.out.println("SimpleDB prompt> ");
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
 			command = br.readLine().toLowerCase().split(" ");
 			if (command.length > 0) {
 				switch (command[0]) {
+				case "end":
+					break outerLoop;
 				case "begin":
 					begin();
 					break;
@@ -47,30 +48,36 @@ public class SimpleDB {
 				case "commit":
 					commit();
 					break;
-				case "set":
-					if (command.length == 3) {
-						set();
-					}
+				default:
+					io();
 					break;
-				case "get":
-					if (command.length == 2) {
-						get();
-					}
-					break;
-				case "unset":
-					if (command.length == 2) {
-						unset();
-					}
-					break;
-				case "numequalto":
-					if (command.length == 2) {
-						numequalto();
-					}
-					break;
-				case "end":
-					break outerLoop;
 				}
 			}
+		}
+	}
+
+	private static void io() throws Exception {
+		switch (command[0]) {
+		case "set":
+			if (command.length == 3) {
+				set();
+			}
+			break;
+		case "get":
+			if (command.length == 2) {
+				get();
+			}
+			break;
+		case "unset":
+			if (command.length == 2) {
+				unset();
+			}
+			break;
+		case "numequalto":
+			if (command.length == 2) {
+				numequalto();
+			}
+			break;
 		}
 	}
 
