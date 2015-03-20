@@ -93,34 +93,33 @@ public class SimpleDB {
 					begin();
 					break;
 				case "rollback":
-					while (!commands.isEmpty()) {
-						// Only run the command if it makes a difference in
-						// state
-						String[] rollBackCommand = commands.pop();
-
-						if (rollBackCommand[0].equals("set")
-								|| rollBackCommand[0].equals("unset")) {
-							String name = rollBackCommand[1];
-							String oldValue = dbMap.get(name); // To unset
-							String value = prevState.get(rollBackCommand[1]); // To
-																				// set
-
-							int oldCount = valueCount.get(oldValue);
-
-							valueCount.replace(oldValue, --oldCount);
-							if (oldCount == 0) {
-								valueCount.remove(oldValue);
-							}
-
-							int newCount = 0;
-							if (valueCount.containsKey(value)) {
-								newCount = valueCount.get(value);
-							}
-							valueCount.put(value, ++newCount);
-							set(name, value);
-						}
-					}
 					if (transactionDepth > 0) {
+						while (!commands.isEmpty()) {
+							// Only run the command if it makes a difference in
+							// state
+							String[] rollBackCommand = commands.pop();
+
+							if (rollBackCommand[0].equals("set")
+									|| rollBackCommand[0].equals("unset")) {
+								String name = rollBackCommand[1];
+								String oldValue = dbMap.get(name); // To unset
+								String value = prevState
+										.get(rollBackCommand[1]); // To
+																	// set
+
+								if (valueCount.get(oldValue) != null) {
+									int oldCount = valueCount.get(oldValue);
+
+									valueCount.replace(oldValue, --oldCount);
+									if (oldCount == 0) {
+										valueCount.remove(oldValue);
+									}
+								}
+
+								set(name, value);
+							}
+						}
+
 						transactionDepth--;
 						return;
 					}
@@ -131,13 +130,16 @@ public class SimpleDB {
 					// loop
 					if (transactionDepth > 0) {
 						isCommit = true;
+						transactionDepth = 0;
 						return;
 					}
 					System.out.println("NO TRANSACTION");
 					break;
 				case "set":
 					if (command.length == 3) {
-						if (dbMap.containsKey(command[1])) {
+						if (dbMap.containsKey(command[1])
+								&& !prevState.get(command[1])
+										.equals(command[2])) {
 							prevState.put(command[1], dbMap.get(command[1]));
 						}
 						set(command[1], command[2]);
