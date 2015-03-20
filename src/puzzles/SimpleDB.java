@@ -74,7 +74,7 @@ public class SimpleDB {
 		Map<String, String> prevState = new HashMap<>();
 
 		while (true) {
-			System.out.println("SimpleDB> ");
+			System.out.print("SimpleDB> ");
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
 			String input = br.readLine();
@@ -99,24 +99,30 @@ public class SimpleDB {
 							// state
 							String[] rollBackCommand = commands.pop();
 
-							if (rollBackCommand[0].equals("set")
-									|| rollBackCommand[0].equals("unset")) {
-								String name = rollBackCommand[1];
-								String oldValue = dbMap.get(name); // To unset
-								String value = prevState
-										.get(rollBackCommand[1]); // To
-																	// set
+							if (rollBackCommand.length > 1
+									&& rollBackCommand[0] != null
+									&& rollBackCommand[1] != null) {
+								if (rollBackCommand[0].equals("set")
+										|| rollBackCommand[0].equals("unset")) {
+									String name = rollBackCommand[1];
+									String oldValue = dbMap.get(name); // To
+																		// unset
+									String value = prevState
+											.get(rollBackCommand[1]); // To
+																		// set
 
-								if (valueCount.get(oldValue) != null) {
-									int oldCount = valueCount.get(oldValue);
+									if (valueCount.get(oldValue) != null) {
+										int oldCount = valueCount.get(oldValue);
 
-									valueCount.replace(oldValue, --oldCount);
-									if (oldCount == 0) {
-										valueCount.remove(oldValue);
+										valueCount
+												.replace(oldValue, --oldCount);
+										if (oldCount == 0) {
+											valueCount.remove(oldValue);
+										}
 									}
-								}
 
-								set(name, value);
+									set(name, value);
+								}
 							}
 						}
 
@@ -137,9 +143,7 @@ public class SimpleDB {
 					break;
 				case "set":
 					if (command.length == 3) {
-						if (dbMap.containsKey(command[1])
-								&& !prevState.get(command[1])
-										.equals(command[2])) {
+						if (dbMap.containsKey(command[1])) {
 							prevState.put(command[1], dbMap.get(command[1]));
 						}
 						set(command[1], command[2]);
