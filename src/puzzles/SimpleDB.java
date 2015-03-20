@@ -1,7 +1,6 @@
 package puzzles;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -143,10 +142,17 @@ public class SimpleDB {
 					break;
 				case "set":
 					if (command.length == 3) {
-						if (dbMap.containsKey(command[1])) {
-							prevState.put(command[1], dbMap.get(command[1]));
+						String name = command[1];
+						String value = command[2];
+						if (transactionDepth > 0
+								&& !(prevState.containsKey(name) && dbMap.get(
+										name).equals(value))) {
+
+							prevState.put(name, dbMap.get(name));
+
 						}
-						set(command[1], command[2]);
+
+						set(name, value);
 					}
 					break;
 				case "get":
