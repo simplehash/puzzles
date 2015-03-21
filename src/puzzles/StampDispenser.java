@@ -6,17 +6,6 @@ package puzzles;
 import java.util.*;
 
 public class StampDispenser {
-	public void stampsLeft() {
-		System.out.print("Remaining stamps are (value, count): ");
-
-		Integer[] stampArray = new Integer[stamps.size()];
-		stamps.toArray(stampArray);
-		for (int o : stampArray) {
-			System.out.print("(" + o + ", " + o + "), ");
-		}
-		System.out.println("");
-	}
-
 	private Queue<Integer> stamps;
 
 	/**
@@ -78,14 +67,10 @@ public class StampDispenser {
 
 		}
 
-		while (!unUsedStamps.isEmpty()) {
-			stamps.add(unUsedStamps.remove());
-		}
-		if (balance > 0) {
-			while (!usedStamps.isEmpty()) {
-				stamps.add(usedStamps.remove());
-			}
+		stamps.addAll(unUsedStamps);
 
+		if (balance > 0) {
+			stamps.addAll(usedStamps);
 			return -1;
 		}
 		return stampsNeeded;
@@ -95,14 +80,7 @@ public class StampDispenser {
 		int[] denominations = { 90, 30, 24, 10, 6, 2, 1 };
 		StampDispenser stampDispenser = new StampDispenser(denominations);
 		// Assert was removed since this was not a unit test
-		System.out.println("Should be 3: "
+		System.out.println("Should be 3 (value: 18): "
 				+ stampDispenser.calcMinNumStampsToFillRequest(18));
-		stampDispenser.stampsLeft();
-		System.out.println("Should be 3: "
-				+ stampDispenser.calcMinNumStampsToFillRequest(120));
-		stampDispenser.stampsLeft();
-		System.out.println("Should be -1: "
-				+ stampDispenser.calcMinNumStampsToFillRequest(120));
-		stampDispenser.stampsLeft();
 	}
 }
