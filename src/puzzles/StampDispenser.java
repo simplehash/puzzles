@@ -50,8 +50,8 @@ public class StampDispenser {
 		int balance = request;
 		int stampsNeeded = 0;
 
-		// Stores the stamps removed to fulfil the balance. This queue is used
-		// in case the balance cannot be fulfiled with the available stamps, in
+		// Stores the stamps removed to fulfill the balance. This queue is used
+		// in case the balance cannot be fulfilled with the available stamps, in
 		// which case the original stamps queue is refilled with the stamps in
 		// this one
 		Queue<Integer> usedStamps = new LinkedList<>();
