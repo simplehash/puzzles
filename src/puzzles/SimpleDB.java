@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
+/* GET, SET, UNSET, and NUMEQUALTO take O(1) to complete
+ * 
+ *  The biggest memory users are to store the actual data (dbMap) and to store the value counts (valueCount). NUMEQUALTO can be implemented as looping through each value of the hashmap, taking O(n), but I made the design decision to value speed over space in this case since space costs little while speed and user experience is much more valuable.
+ *  */
+
 public class SimpleDB {
 	private static Map<String, String> dbMap; // Name, value
 	private static int transactionDepth;
@@ -80,7 +85,7 @@ public class SimpleDB {
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					System.in));
 			String input = br.readLine();
-			if (input == null) {
+			if (input == null) { // EoF handler
 				return;
 			}
 			String[] command = input.toLowerCase().split(" ");
