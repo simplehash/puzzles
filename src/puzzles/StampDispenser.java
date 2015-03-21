@@ -6,28 +6,18 @@ package puzzles;
 import java.util.*;
 
 public class StampDispenser {
-	private class Stamp {
-		int value;
-		int count;
-
-		public Stamp(int value, int count) {
-			this.value = value;
-			this.count = count;
-		}
-	}
-
 	public void stampsLeft() {
 		System.out.print("Remaining stamps are (value, count): ");
 
-		Stamp[] stampArray = new Stamp[stamps.size()];
+		Integer[] stampArray = new Integer[stamps.size()];
 		stamps.toArray(stampArray);
-		for (Stamp o : stampArray) {
-			System.out.print("(" + o.value + ", " + o.count + "), ");
+		for (int o : stampArray) {
+			System.out.print("(" + o + ", " + o + "), ");
 		}
 		System.out.println("");
 	}
 
-	private Queue<Stamp> stamps;
+	private Queue<Integer> stamps;
 
 	/**
 	 * Constructs a new StampDispenser that will be able to dispense the given
@@ -39,34 +29,17 @@ public class StampDispenser {
 	 *            least a 1.
 	 */
 	public StampDispenser(int[] stampDenominations) {
-		stamps = new PriorityQueue<Stamp>(1, new StampComparator());
+		stamps = new PriorityQueue<Integer>(1, new StampComparator());
 
-		// Build hashmap of all denominations and their associated count (how
-		// many there are of that denomination). A hashmap allows updating of an
-		// individual value in O(1) instead of O(n) (queue)
-		Map<Integer, Integer> denominationCount = new HashMap<>();
 		for (int i : stampDenominations) {
-			int count = 1;
-			if (denominationCount.containsKey(i)) {
-				count += denominationCount.get(i);
-			}
-			denominationCount.put(i, count);
-		}
-
-		// Now that we've got all stamp demoninations and their associated
-		// counts, put the stamps into a descending priority queue
-		Iterator<Integer> stampIterator = denominationCount.keySet().iterator();
-		while (stampIterator.hasNext()) {
-			int stampValue = stampIterator.next();
-			int stampCount = denominationCount.get(stampValue);
-			stamps.add(new Stamp(stampValue, stampCount));
+			stamps.add(i);
 		}
 	}
 
-	private static class StampComparator implements Comparator<Stamp> {
+	private static class StampComparator implements Comparator<Integer> {
 		@Override
-		public int compare(Stamp s1, Stamp s2) {
-			return s2.value - s1.value;
+		public int compare(Integer s1, Integer s2) {
+			return s2 - s1;
 		}
 	}
 
@@ -86,62 +59,33 @@ public class StampDispenser {
 		int balance = request;
 		int stampsNeeded = 0;
 
-		// Since there is no way of iterating through a priority queue without
-		// removing prior elements (iterator does not guarantee order, see
-		// http://docs.oracle.com/javase/1.5.0/docs/api/java/util/PriorityQueue.html#iterator()),
-		// we construct a queue of unused stamps to be re-added to the
-		// stamps queue
-		Queue<Stamp> leftOverStamps = new LinkedList<>();
-
 		// Stores the stamps removed to fulfil the balance. This queue is used
 		// in case the balance cannot be fulfiled with the available stamps, in
 		// which case the original stamps queue is refilled with the stamps in
 		// this one
-		Queue<Stamp> removedStamps = new LinkedList<>();
+		Queue<Integer> usedStamps = new LinkedList<>();
+		Queue<Integer> unUsedStamps = new LinkedList<>();
 
 		while (balance > 0 && !stamps.isEmpty()) {
-			Stamp currentStamp = stamps.remove();
-			int stampValue = currentStamp.value;
-			int stampCount = currentStamp.count;
-			// Calculate if the balance > current stamp value, otherwise look at
-			// next biggest stamp
-			if (balance >= stampValue) {
-				int stampsToRemove = balance / stampValue;
-
-				if (stampsToRemove >= stampCount) {// Need at least all of the
-													// greatest denomination
-													// stamps
-					balance -= stampCount * stampValue;
-					stampsNeeded += stampCount;
-					removedStamps.add(new Stamp(stampValue, stampCount));
-				} else { // Doesn't need all of the greatest denomination
-							// available
-					int valueRemoved = stampsToRemove * stampValue;
-					balance -= valueRemoved;
-					stampsNeeded += stampsToRemove;
-
-					Stamp stampsRemoved = new Stamp(stampValue, stampCount
-							- stampsToRemove);
-					// Add unused stamps of this denomination to the left-overs
-					// queue
-					leftOverStamps.add(stampsRemoved);
-					removedStamps.add(stampsRemoved);
-				}
+			int currentStamp = stamps.remove();
+			if (balance >= currentStamp) {
+				balance -= currentStamp;
+				stampsNeeded++;
+				usedStamps.add(currentStamp);
 			} else {
-				leftOverStamps.add(currentStamp);
+				unUsedStamps.add(currentStamp);
 			}
+
 		}
 
-		while (!leftOverStamps.isEmpty()) {
-			stamps.add(leftOverStamps.remove());
+		while (!unUsedStamps.isEmpty()) {
+			stamps.add(unUsedStamps.remove());
 		}
-
-		// After going through all available stamps, still unable to dispense
-		// the total value. Restore unused stamps
 		if (balance > 0) {
-			while (!removedStamps.isEmpty()) {
-				stamps.add(removedStamps.remove());
+			while (!usedStamps.isEmpty()) {
+				stamps.add(usedStamps.remove());
 			}
+
 			return -1;
 		}
 		return stampsNeeded;
