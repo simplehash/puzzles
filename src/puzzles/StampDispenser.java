@@ -36,65 +36,41 @@ public class StampDispenser {
 	 * @throws Exception
 	 */
 	public int calcMinNumStampsToFillRequest(int request) {
-		if (request <= 0) { // Can't dispense
+		if (request < 0) { // Can't dispense
 			return -1;
 		}
 
-		int minStamps = Integer.MAX_VALUE;
+		int m = stamps.length + 1;
+		int n = request + 1;
+		int actualAmount;
+		int[][] requiredStamps = new int[m][n];
+		int infinity = Integer.MAX_VALUE - 1;
 
-		outerLoop: for (int i = 0; i < stamps.length; i++) {
-			if (stamps[i] == null) { // Can't dispense
-				return -1;
-			}
+		for (int j = 1; j < n; j++) {
+			requiredStamps[0][j] = infinity;
+		}
 
-			int startingStamp = stamps[i];
-			if (startingStamp <= request) { // Skip denominations > request
-				int stampCount = 0; // Trial with a new starting denomination,
-									// so reset counter
-				int balance = request;
-				for (int j = i; j < stamps.length; j++) {
-					/*
-					 * Why is this if statement here?
-					 * 
-					 * If the stamps collection has a denomination = request,
-					 * min should be 1. Else, min should be 2. This condition
-					 * saves us from trying further combinations of stamps
-					 * because 2 is the best case if 1 is not achieved.
-					 */
-					if (minStamps <= 2) {
-						break outerLoop;
-					}
-					int currentStamp = stamps[j];
-					if (currentStamp <= balance) { // Skip denominations >
-													// remaining balance,
-													// redundant check
-						int stampsNeeded = balance / currentStamp;
-						balance -= stampsNeeded * currentStamp;
-						stampCount += stampsNeeded;
-					}
+		for (int stampPos = 1; stampPos < m; stampPos++) {
+			for (int currentChange = 1; currentChange < n; currentChange++) {
+				if (currentChange < stamps[stampPos - 1]) {
+					actualAmount = infinity;
+				} else {
+					actualAmount = requiredStamps[stampPos][currentChange
+							- stamps[stampPos - 1]];
 				}
-				if (stampCount < minStamps) { // If starting at current
-												// denomination yielded a
-												// smaller count, store it
-					minStamps = stampCount;
-				}
+				requiredStamps[stampPos][currentChange] = Math.min(
+						requiredStamps[stampPos - 1][currentChange],
+						1 + actualAmount);
 			}
 		}
 
-		return minStamps;
+		return requiredStamps[m - 1][n - 1];
 	}
 
 	public static void main(String[] args) throws Exception {
 		int[] denominations = { 90, 30, 24, 10, 6, 2, 1 };
 		StampDispenser stampDispenser = new StampDispenser(denominations);
-		// Assert was removed since this was not a unit test
 		System.out.println("Should be 3 (value: 18): "
 				+ stampDispenser.calcMinNumStampsToFillRequest(18));
-
-		// Tests greedy and sorting
-		stampDispenser = new StampDispenser(new int[] { 4, 1, 3 });
-		// Greedy would've failed here
-		System.out.println("Should be 2 (value: 6): "
-				+ stampDispenser.calcMinNumStampsToFillRequest(6));
 	}
 }
