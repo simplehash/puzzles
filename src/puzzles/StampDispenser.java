@@ -6,7 +6,7 @@ package puzzles;
 import java.util.*;
 
 public class StampDispenser {
-	private Queue<Integer> stamps;
+	private Integer[] stamps;
 
 	/**
 	 * Constructs a new StampDispenser that will be able to dispense the given
@@ -18,20 +18,13 @@ public class StampDispenser {
 	 *            least a 1.
 	 */
 	public StampDispenser(int[] stampDenominations) {
-		if (stampDenominations != null && stampDenominations.length > 0) {
-			stamps = new PriorityQueue<Integer>(1, new StampComparator());
-
-			for (int i : stampDenominations) {
-				stamps.add(i);
-			}
+		// Ensures denominations are in descending order by sorting it
+		int length = stampDenominations.length;
+		stamps = new Integer[length];
+		for (int i = 0; i < length; i++) {
+			stamps[i] = stampDenominations[i];
 		}
-	}
-
-	private static class StampComparator implements Comparator<Integer> {
-		@Override
-		public int compare(Integer s1, Integer s2) {
-			return s2 - s1;
-		}
+		Arrays.sort(stamps, Collections.reverseOrder());
 	}
 
 	/**
@@ -42,40 +35,53 @@ public class StampDispenser {
 	 *            The total value of the stamps to be dispensed.
 	 * @throws Exception
 	 */
-	public int calcMinNumStampsToFillRequest(int request) throws Exception {
-		if (request <= 0) {
-			throw new Exception("Request should be >= 0");
-		}
-
-		int balance = request;
-		int stampsNeeded = 0;
-
-		// Stores the stamps removed to fulfill the balance. This queue is used
-		// in case the balance cannot be fulfilled with the available stamps, in
-		// which case the original stamps queue is refilled with the stamps in
-		// this one
-		Queue<Integer> usedStamps = new LinkedList<>();
-		Queue<Integer> unUsedStamps = new LinkedList<>();
-
-		while (balance > 0 && !stamps.isEmpty()) {
-			int currentStamp = stamps.remove();
-			if (balance >= currentStamp) {
-				balance -= currentStamp;
-				stampsNeeded++;
-				usedStamps.add(currentStamp);
-			} else {
-				unUsedStamps.add(currentStamp);
-			}
-
-		}
-
-		stamps.addAll(unUsedStamps);
-
-		if (balance > 0) {
-			stamps.addAll(usedStamps);
+	public int calcMinNumStampsToFillRequest(int request) {
+		if (request <= 0) { // Can't dispense
 			return -1;
 		}
-		return stampsNeeded;
+
+		int minStamps = Integer.MAX_VALUE;
+
+		outerLoop: for (int i = 0; i < stamps.length; i++) {
+			if (stamps[i] == null) { // Can't dispense
+				return -1;
+			}
+
+			int startingStamp = stamps[i];
+			if (startingStamp <= request) { // Skip denominations > request
+				int stampCount = 0; // Trial with a new starting denomination,
+									// so reset counter
+				int balance = request;
+				for (int j = i; j < stamps.length; j++) {
+					/*
+					 * Why is this if statement here?
+					 * 
+					 * If the stamps collection has a denomination = request,
+					 * min should be 1. Else, min should be 2. This condition
+					 * saves us from trying further combinations of stamps
+					 * because 2 is the best case if 1 is not achieved.
+					 */
+					if (minStamps <= 2) {
+						break outerLoop;
+					}
+					int currentStamp = stamps[j];
+					if (currentStamp <= balance) { // Skip denominations >
+													// remaining balance,
+													// redundant check
+						int stampsNeeded = balance / currentStamp;
+						balance -= stampsNeeded * currentStamp;
+						stampCount += stampsNeeded;
+					}
+				}
+				if (stampCount < minStamps) { // If starting at current
+												// denomination yielded a
+												// smaller count, store it
+					minStamps = stampCount;
+				}
+			}
+		}
+
+		return minStamps;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -84,5 +90,11 @@ public class StampDispenser {
 		// Assert was removed since this was not a unit test
 		System.out.println("Should be 3 (value: 18): "
 				+ stampDispenser.calcMinNumStampsToFillRequest(18));
+
+		// Tests greedy and sorting
+		stampDispenser = new StampDispenser(new int[] { 4, 1, 3 });
+		// Greedy would've failed here
+		System.out.println("Should be 2 (value: 6): "
+				+ stampDispenser.calcMinNumStampsToFillRequest(6));
 	}
 }
