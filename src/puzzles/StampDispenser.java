@@ -18,10 +18,12 @@ public class StampDispenser {
 	 *            least a 1.
 	 */
 	public StampDispenser(int[] stampDenominations) {
-		stamps = new PriorityQueue<Integer>(1, new StampComparator());
+		if (stampDenominations != null && stampDenominations.length > 0) {
+			stamps = new PriorityQueue<Integer>(1, new StampComparator());
 
-		for (int i : stampDenominations) {
-			stamps.add(i);
+			for (int i : stampDenominations) {
+				stamps.add(i);
+			}
 		}
 	}
 
