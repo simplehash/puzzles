@@ -8,7 +8,7 @@ public class SimpleDB {
 	private static Map<String, String> dbMap; // Name, value
 	private static int transactionDepth;
 	private static boolean isCommit = false;
-	private static Map<String, Integer> valueCount;
+	private static Map<String, Integer> valueCount; // Makes numequalto O(1)
 
 	public static void main(String[] args) throws Exception {
 		dbMap = new HashMap<>();
@@ -39,8 +39,11 @@ public class SimpleDB {
 		}
 
 		String value = dbMap.get(name);
-		int count = valueCount.get(value);
-		valueCount.replace(value, --count);
+		int count = -1;
+		if (valueCount.containsKey(value)) {
+			count += valueCount.get(value);
+			valueCount.replace(value, count);
+		}
 		dbMap.remove(name);
 	}
 
@@ -58,11 +61,11 @@ public class SimpleDB {
 		}
 
 		dbMap.put(name, value);
-		int count = 0;
+		int count = 1;
 		if (valueCount.containsKey(value)) {
-			count = valueCount.get(value);
+			count += valueCount.get(value);
 		}
-		valueCount.put(value, ++count);
+		valueCount.put(value, count);
 	}
 
 	private static void begin() throws Exception {
@@ -100,28 +103,26 @@ public class SimpleDB {
 
 							if (rollBackCommand.length > 1
 									&& rollBackCommand[0] != null
-									&& rollBackCommand[1] != null) {
-								if (rollBackCommand[0].equals("set")
-										|| rollBackCommand[0].equals("unset")) {
-									String name = rollBackCommand[1];
-									String oldValue = dbMap.get(name); // To
-																		// unset
-									String value = prevState
-											.get(rollBackCommand[1]); // To
-																		// set
+									&& rollBackCommand[1] != null
+									&& ((rollBackCommand[0].equals("set") || rollBackCommand[0]
+											.equals("unset")))) {
+								String name = rollBackCommand[1];
+								String oldValue = dbMap.get(name); // To
+																	// unset
+								String value = prevState
+										.get(rollBackCommand[1]); // To
+																	// set
 
-									if (valueCount.get(oldValue) != null) {
-										int oldCount = valueCount.get(oldValue);
+								if (valueCount.get(oldValue) != null) {
+									int oldCount = valueCount.get(oldValue);
 
-										valueCount
-												.replace(oldValue, --oldCount);
-										if (oldCount == 0) {
-											valueCount.remove(oldValue);
-										}
+									valueCount.replace(oldValue, --oldCount);
+									if (oldCount == 0) {
+										valueCount.remove(oldValue);
 									}
-
-									set(name, value);
 								}
+
+								set(name, value);
 							}
 						}
 
@@ -145,8 +146,7 @@ public class SimpleDB {
 						String name = command[1];
 						String value = command[2];
 						if (transactionDepth > 0
-								&& !(prevState.containsKey(name) && dbMap.get(
-										name).equals(value))) {
+								&& !(prevState.containsKey(name))) {
 
 							prevState.put(name, dbMap.get(name));
 
