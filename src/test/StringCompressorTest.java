@@ -2,7 +2,6 @@ package test;
 
 import static org.junit.Assert.*;
 
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -28,7 +27,7 @@ public class StringCompressorTest {
 	@Test
 	public void nullInput() throws Exception {
 		ex.expect(Exception.class);
-		StringCompressor s = new StringCompressor(null);
+		new StringCompressor(null);
 	}
 
 }

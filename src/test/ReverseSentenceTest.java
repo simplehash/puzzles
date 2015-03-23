@@ -20,7 +20,7 @@ public class ReverseSentenceTest {
 	@Test
 	public void nullSentence() throws Exception {
 		exc.expect(Exception.class);
-		ReverseSentence r = new ReverseSentence(null);
+		new ReverseSentence(null);
 	}
 
 	@Test

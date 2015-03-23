@@ -1,7 +1,5 @@
 package test;
 
-import static org.junit.Assert.*;
-
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -38,17 +36,17 @@ public class TVKeyboardTest {
 	@Test
 	public void nullSentence() throws Exception {
 		ex.expect(Exception.class);
-		TVKeyboard t = new TVKeyboard(null, 5);
+		new TVKeyboard(null, 5);
 	}
 
 	@Test
 	public void impossible() throws Exception {
 		ex.expect(Exception.class);
-		TVKeyboard t = new TVKeyboard("fred fred", 0);
+		new TVKeyboard("fred fred", 0);
 	}
 
 	@Test
 	public void empty() throws Exception {
-		TVKeyboard t = new TVKeyboard("", 5);
+		new TVKeyboard("", 5);
 	}
 }
