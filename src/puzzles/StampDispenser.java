@@ -40,31 +40,23 @@ public class StampDispenser {
 			return -1;
 		}
 
-		int m = stamps.length + 1;
-		int n = request + 1;
-		int actualAmount;
-		int[][] requiredStamps = new int[m][n];
-		int infinity = Integer.MAX_VALUE - 1;
-
-		for (int j = 1; j < n; j++) {
-			requiredStamps[0][j] = infinity;
+		int[] stampsRequired = new int[request + 1];
+		stampsRequired[0] = 0;
+		for (int i = 1; i < stampsRequired.length; i++) {
+			stampsRequired[i] = Integer.MAX_VALUE;
 		}
-
-		for (int stampPos = 1; stampPos < m; stampPos++) {
-			for (int currentChange = 1; currentChange < n; currentChange++) {
-				if (currentChange < stamps[stampPos - 1]) {
-					actualAmount = infinity;
-				} else {
-					actualAmount = requiredStamps[stampPos][currentChange
-							- stamps[stampPos - 1]];
+		for (int currentRequest = 1; currentRequest < stampsRequired.length; currentRequest++) {
+			for (int currentStamp : stamps) {
+				if (currentStamp <= currentRequest) {
+					int proposedStampsRequired = stampsRequired[currentRequest
+							- currentStamp] + 1;
+					if (proposedStampsRequired < stampsRequired[currentRequest]) {
+						stampsRequired[currentRequest] = proposedStampsRequired;
+					}
 				}
-				requiredStamps[stampPos][currentChange] = Math.min(
-						requiredStamps[stampPos - 1][currentChange],
-						1 + actualAmount);
 			}
 		}
-
-		return requiredStamps[m - 1][n - 1];
+		return stampsRequired[request];
 	}
 
 	public static void main(String[] args) throws Exception {
