@@ -19,9 +19,6 @@ public class LongestIncreasingSubsequence {
 		List<Integer> tempLISIndex = new ArrayList<>();
 		tempLISIndex.add(null);
 		tempLISIndex.add(0);
-		List<Integer> tempLISValue = new ArrayList<>();
-		tempLISValue.add(null);
-		tempLISValue.add(sequence[0]);
 		// The parent index of each index of int[] sequence that forms the
 		// overall LIS
 		Integer[] parentIndex = new Integer[sequence.length];
@@ -29,20 +26,19 @@ public class LongestIncreasingSubsequence {
 			int currentElement = sequence[i];
 			// Increasing #, add it on to the LIS list (this element makes a
 			// longer LIS)
-			if (currentElement > tempLISValue.get(tempLISValue.size() - 1)) {
+			if (currentElement > sequence[tempLISIndex.get(tempLISIndex.size() - 1)]) {
 				tempLISIndex.add(i);
-				tempLISValue.add(sequence[i]);
 				parentIndex[i] = tempLISIndex.get(tempLISIndex.size() - 2);
 			} else { // Lower/equal number, replace the smallest # in
 						// sequence[tempLISIndex] that is still larger than it
 				int begin = 1;
-				int end = tempLISValue.size() - 1;
+				int end = tempLISIndex.size() - 1;
 				int middle = (begin + end) / 2;
 				while (begin != end) {
-
-					if (currentElement > tempLISValue.get(middle)) {
+					int comparer = sequence[tempLISIndex.get(middle)];
+					if (currentElement > comparer) {
 						begin = middle + 1;
-					} else if (currentElement < tempLISValue.get(middle)) {
+					} else if (currentElement < comparer) {
 						end = middle - 1;
 					} else {
 						break;
@@ -51,10 +47,7 @@ public class LongestIncreasingSubsequence {
 				}
 				tempLISIndex.remove(middle);
 				tempLISIndex.add(middle, i);
-				tempLISValue.remove(middle);
-				tempLISValue.add(middle, sequence[i]);
 				parentIndex[i] = tempLISIndex.get(middle - 1);
-
 			}
 		}
 
