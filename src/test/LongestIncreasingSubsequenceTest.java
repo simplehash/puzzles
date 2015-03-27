@@ -13,10 +13,10 @@ public class LongestIncreasingSubsequenceTest {
 
 	@Test
 	public void happy() {
-		l = new LongestIncreasingSubsequence(new int[] { 2, 3, 4, 5, 1, 9 });
-		assertTrue(Arrays.equals(l.calculate(), new int[] { 2, 3, 4, 5, 9 }));
 		l = new LongestIncreasingSubsequence(new int[] { 2, 6, 3, 4, 1, 2, 9, 5, 8 });
 		assertTrue(Arrays.equals(l.calculate(), new int[] { 2, 3, 4, 5, 8 }));
+		l = new LongestIncreasingSubsequence(new int[] { 2, 3, 4, 5, 1, 9 });
+		assertTrue(Arrays.equals(l.calculate(), new int[] { 2, 3, 4, 5, 9 }));
 	}
 
 	@Test
