@@ -1,8 +1,6 @@
 package puzzles;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class FirstUniqueWord {
 	private String[] words;
@@ -22,7 +20,7 @@ public class FirstUniqueWord {
 		// Assumes no punctuation
 		words = paragraph.toLowerCase().split(" ");
 
-		HashMap<String, Integer> wordBank = new HashMap<>();
+		Map<String, Integer> wordBank = new HashMap<>();
 		Queue<String> wordQ = new LinkedList<>();
 
 		for (String word : words) {

@@ -1,6 +1,6 @@
 package puzzles;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class MatrixTraverse {
 	private static String[][] matrix;
@@ -58,7 +58,7 @@ public class MatrixTraverse {
 		private String value;
 		private int row;
 		private int col;
-		private HashMap<String, Boolean> visited;
+		private Map<String, Boolean> visited;
 
 		public Cell(String value, int row, int col) {
 			this.value = value;
