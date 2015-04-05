@@ -12,7 +12,7 @@ public class GreatestSubArray {
 			int currentStartIndex = 0;
 			int currentEndIndex = 0;
 			for (int i = 1; i < numbers.length; i++) {
-				if (currentMax + numbers[i] < numbers[i]) {
+				if (currentMax < 0) {
 					currentMax = numbers[i];
 					currentStartIndex = i;
 					currentEndIndex = i;
@@ -26,8 +26,7 @@ public class GreatestSubArray {
 					endIndex = currentEndIndex;
 				}
 			}
-			System.out.println("Max sub-array: " + max + ", found between "
-					+ startIndex + " and " + endIndex + ", inclusive.");
+			System.out.println("Max sub-array: " + max + ", found between " + startIndex + " and " + endIndex + ", inclusive.");
 		}
 	}
 

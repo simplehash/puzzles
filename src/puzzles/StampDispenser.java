@@ -48,11 +48,7 @@ public class StampDispenser {
 		for (int currentRequest = 1; currentRequest < stampsRequired.length; currentRequest++) {
 			for (int currentStamp : stamps) {
 				if (currentStamp <= currentRequest) {
-					int proposedStampsRequired = stampsRequired[currentRequest
-							- currentStamp] + 1;
-					if (proposedStampsRequired < stampsRequired[currentRequest]) {
-						stampsRequired[currentRequest] = proposedStampsRequired;
-					}
+					stampsRequired[currentRequest] = Math.min(stampsRequired[currentRequest - currentStamp] + 1, stampsRequired[currentRequest]);
 				}
 			}
 		}
@@ -62,7 +58,6 @@ public class StampDispenser {
 	public static void main(String[] args) throws Exception {
 		int[] denominations = { 90, 30, 24, 10, 6, 2, 1 };
 		StampDispenser stampDispenser = new StampDispenser(denominations);
-		System.out.println("Should be 3 (value: 18): "
-				+ stampDispenser.calcMinNumStampsToFillRequest(18));
+		System.out.println("Should be 3 (value: 18): " + stampDispenser.calcMinNumStampsToFillRequest(18));
 	}
 }
