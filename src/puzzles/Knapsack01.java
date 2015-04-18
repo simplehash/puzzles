@@ -30,11 +30,8 @@ public class Knapsack01 {
 					if (weights[currentItemIndex - 1] > currentCapacity) {
 						table[currentItemIndex][currentCapacity] = withoutItem;
 					} else {
-						int withItem = table[currentItemIndex - 1][currentCapacity
-								- weights[currentItemIndex - 1]]
-								+ values[currentItemIndex - 1];
-						table[currentItemIndex][currentCapacity] = Math.max(
-								withoutItem, withItem);
+						int withItem = table[currentItemIndex - 1][currentCapacity - weights[currentItemIndex - 1]] + values[currentItemIndex - 1];
+						table[currentItemIndex][currentCapacity] = Math.max(withoutItem, withItem);
 					}
 				}
 			}
