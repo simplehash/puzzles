@@ -20,7 +20,8 @@ public class Permutations {
 			count++;
 		} else {
 			for (int i = 0; i < length; i++) {
-				permutate(word + remainingLetters.charAt(i), remainingLetters.substring(0, i) + remainingLetters.substring(i + 1));
+				permutate(word + remainingLetters.charAt(i),
+						remainingLetters.substring(0, i) + remainingLetters.substring(i + 1));
 			}
 		}
 	}

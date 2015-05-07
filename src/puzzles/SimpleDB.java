@@ -82,8 +82,7 @@ public class SimpleDB {
 
 		while (true) {
 			System.out.print("SimpleDB> ");
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					System.in));
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			String input = br.readLine();
 			if (input == null) { // EoF handler
 				return;
@@ -106,17 +105,13 @@ public class SimpleDB {
 							// state
 							String[] rollBackCommand = commands.pop();
 
-							if (rollBackCommand.length > 1
-									&& rollBackCommand[0] != null
-									&& rollBackCommand[1] != null
-									&& ((rollBackCommand[0].equals("set") || rollBackCommand[0]
-											.equals("unset")))) {
+							if (rollBackCommand.length > 1 && rollBackCommand[0] != null && rollBackCommand[1] != null
+									&& ((rollBackCommand[0].equals("set") || rollBackCommand[0].equals("unset")))) {
 								String name = rollBackCommand[1];
 								String oldValue = dbMap.get(name); // To
 																	// unset
-								String value = prevState
-										.get(rollBackCommand[1]); // To
-																	// set
+								String value = prevState.get(rollBackCommand[1]); // To
+																					// set
 
 								if (valueCount.get(oldValue) != null) {
 									int oldCount = valueCount.get(oldValue);
@@ -150,8 +145,7 @@ public class SimpleDB {
 					if (command.length == 3) {
 						String name = command[1];
 						String value = command[2];
-						if (transactionDepth > 0
-								&& !(prevState.containsKey(name))) {
+						if (transactionDepth > 0 && !(prevState.containsKey(name))) {
 
 							prevState.put(name, dbMap.get(name));
 

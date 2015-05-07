@@ -21,16 +21,14 @@ public class MatrixTraverseTest {
 
 	@Test
 	public void multiRow() throws Exception {
-		String[][] matrix = new String[][] { { ">", " ", "v" },
-				{ "@", " ", "<" } };
+		String[][] matrix = new String[][] { { ">", " ", "v" }, { "@", " ", "<" } };
 		MatrixTraverse m = new MatrixTraverse(matrix);
 		assertTrue(m.traverse());
 	}
 
 	@Test
 	public void loop() throws Exception {
-		String[][] matrix = new String[][] { { ">", " ", "v" },
-				{ "^", " ", "<" } };
+		String[][] matrix = new String[][] { { ">", " ", "v" }, { "^", " ", "<" } };
 		ex.expect(Exception.class);
 		MatrixTraverse m = new MatrixTraverse(matrix);
 		m.traverse();
@@ -38,8 +36,7 @@ public class MatrixTraverseTest {
 
 	@Test
 	public void offBoard() throws Exception {
-		String[][] matrix = new String[][] { { ">", " ", "v" },
-				{ " ", " ", "<" } };
+		String[][] matrix = new String[][] { { ">", " ", "v" }, { " ", " ", "<" } };
 		ex.expect(Exception.class);
 		MatrixTraverse m = new MatrixTraverse(matrix);
 		m.traverse();
