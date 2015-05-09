@@ -26,8 +26,7 @@ public class GreatestSubArray {
 					endIndex = currentEndIndex;
 				}
 			}
-			System.out.println("Max sub-array: " + max + ", found between " + startIndex + " and " + endIndex
-					+ ", inclusive.");
+			System.out.println("Max sub-array: " + max + ", found between " + startIndex + " and " + endIndex + ", inclusive.");
 		}
 	}
 

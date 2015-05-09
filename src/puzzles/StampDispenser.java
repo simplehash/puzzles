@@ -48,8 +48,7 @@ public class StampDispenser {
 		for (int currentRequest = 1; currentRequest < stampsRequired.length; currentRequest++) {
 			for (int currentStamp : stamps) {
 				if (currentStamp <= currentRequest) {
-					stampsRequired[currentRequest] = Math.min(stampsRequired[currentRequest - currentStamp] + 1,
-							stampsRequired[currentRequest]);
+					stampsRequired[currentRequest] = Math.min(stampsRequired[currentRequest - currentStamp] + 1, stampsRequired[currentRequest]);
 				}
 			}
 		}
