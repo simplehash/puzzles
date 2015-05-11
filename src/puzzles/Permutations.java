@@ -1,14 +1,12 @@
 package puzzles;
 
 public class Permutations {
-	private String string;
 	private int count;
 
 	public Permutations(String string) throws Exception {
 		if (string == null) {
 			throw new Exception("Null string provided");
 		}
-		this.string = string;
 		count = 0;
 		permutate("", string);
 	}
