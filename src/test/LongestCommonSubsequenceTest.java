@@ -17,7 +17,7 @@ public class LongestCommonSubsequenceTest {
 
 	@Test
 	public void diffTest() {
-		LongestCommonSubsequence.diff("freeeeeed sdfas", "freed asfasdf");
+		LongestCommonSubsequence.diff("freeeeeed sdfas", "freed akkksfasdf");
 	}
 
 }
