@@ -23,23 +23,24 @@ public class LongestCommonSubsequence {
 						ops.append("-");
 					}
 					break;
-				} else if (lcs.charAt(posLCS) == s1.charAt(pos1) && lcs.charAt(posLCS) == s2.charAt(pos2)) {
+				} else if (s1.charAt(pos1) == s2.charAt(pos2)) {
 					pos1++;
 					pos2++;
 					posLCS++;
-				} else if (s1.charAt(pos1) != lcs.charAt(posLCS)) {
-					changes.append(s1.charAt(pos1));
-					ops.append("-");
-					pos1++;
-				} else if (lcs.charAt(posLCS) != s2.charAt(pos2)) {
-					changes.append(s2.charAt(pos2));
-					ops.append("+");
-					pos2++;
 				} else {
-					System.err.println("wtf happened?");
+					if (lcs.isEmpty() || s1.charAt(pos1) != lcs.charAt(posLCS)) {
+						changes.append(s1.charAt(pos1));
+						ops.append("-");
+						pos1++;
+					}
+					if (lcs.isEmpty() || lcs.charAt(posLCS) != s2.charAt(pos2)) {
+						changes.append(s2.charAt(pos2));
+						ops.append("+");
+						pos2++;
+					}
 				}
 			}
-			System.out.println(changes.toString());
+			System.out.println(changes);
 			System.out.println(ops);
 		}
 	}
