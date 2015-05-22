@@ -3,9 +3,8 @@ package puzzles;
 public class TreeLCA {
 	public static Node treeRecursive(Node node, int v1, int v2) {
 		// LCA search for generic binary trees
-		if (node == null) {
-			return null;
-		} else if (node.value == v1 || node.value == v2) { // Found one!
+		if (node == null || node.value == v1 || node.value == v2) { // Found
+																	// one!
 			return node;
 		} else {
 			Node leftTree = treeRecursive(node.left, v1, v2);
