@@ -6,7 +6,7 @@ import java.util.*;
 
 import org.junit.Test;
 
-import puzzles.WordSegmentation;
+import puzzles.DP;
 
 public class WordSegmentationTest {
 
@@ -19,8 +19,8 @@ public class WordSegmentationTest {
 		dictionary.add("sung");
 		dictionary.add("samsung");
 		dictionary.add("fred");
-		assertTrue(WordSegmentation.go("ilikesamsung", dictionary));
-		assertTrue(WordSegmentation.go("ilikefred", dictionary));
+		assertTrue(DP.wordSegmentation("ilikesamsung", dictionary));
+		assertTrue(DP.wordSegmentation("ilikefred", dictionary));
 	}
 
 }

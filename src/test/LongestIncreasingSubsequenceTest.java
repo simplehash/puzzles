@@ -6,34 +6,31 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import puzzles.LongestIncreasingSubsequence;
+import puzzles.DP;
 
 public class LongestIncreasingSubsequenceTest {
-	LongestIncreasingSubsequence l;
 
 	@Test
 	public void happy() {
-		l = new LongestIncreasingSubsequence(new int[] { 2, 6, 3, 4, 1, 2, 9, 5, 8 });
-		assertTrue(Arrays.equals(l.calculate(), new int[] { 2, 3, 4, 5, 8 }));
-		l = new LongestIncreasingSubsequence(new int[] { 2, 3, 4, 5, 1, 9 });
-		assertTrue(Arrays.equals(l.calculate(), new int[] { 2, 3, 4, 5, 9 }));
+		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 2, 6, 3, 4, 1, 2, 9, 5, 8 }), new int[] {
+				2, 3, 4, 5, 8 }));
+
+		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 2, 3, 4, 5, 1, 9 }), new int[] { 2, 3, 4,
+				5, 9 }));
 	}
 
 	@Test
 	public void empty() {
-		l = new LongestIncreasingSubsequence(new int[] {});
-		assertNull(l.calculate());
+		assertNull(DP.longestIncreasingSubsequence(new int[] {}));
 	}
 
 	@Test
 	public void nullNumbers() {
-		l = new LongestIncreasingSubsequence(null);
-		assertNull(l.calculate());
+		assertNull(DP.longestIncreasingSubsequence(null));
 	}
 
 	@Test
 	public void allSame() {
-		l = new LongestIncreasingSubsequence(new int[] { 1, 1, 1 });
-		assertTrue(Arrays.equals(l.calculate(), new int[] { 1 }));
+		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 1, 1, 1 }), new int[] { 1 }));
 	}
 }

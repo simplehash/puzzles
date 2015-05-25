@@ -1,6 +1,89 @@
 package puzzles;
 
+import java.util.*;
+
 public class DP {
+	public static boolean wordSegmentation(String s, List<String> dictionary) {
+		int length = s.length();
+		boolean[] table = new boolean[length + 1]; // Boolean arrays default to
+													// false
+
+		for (int i = 1; i <= length; i++) {
+			if (!table[i] && dictionary.contains(s.substring(0, i))) {
+				table[i] = true;
+			}
+			if (table[i]) {
+				if (i == length) {
+					return true;
+				}
+
+				for (int j = i + 1; j <= length; j++) {
+					String subStr = s.substring(i, j);
+					if (!table[j] && dictionary.contains(subStr)) {
+						table[j] = true;
+					}
+					if (j == length && table[j]) {
+						return true;
+					}
+				}
+			}
+			System.out.println(s.charAt(i - 1) + " " + table[i]);
+		}
+
+		return false;
+	}
+
+	public static int[] longestIncreasingSubsequence(int[] sequence) {
+		if (sequence == null || sequence.length < 1) {
+			return null;
+		}
+		// LIS of length i ending at sequence[i]
+		List<Integer> tempLISIndex = new ArrayList<>();
+		tempLISIndex.add(null);
+		tempLISIndex.add(0);
+		// The parent index of each index of int[] sequence that forms the
+		// overall LIS
+		Integer[] parentIndex = new Integer[sequence.length];
+		for (int i = 1; i < sequence.length; i++) {
+			int currentElement = sequence[i];
+			// Increasing #, add it on to the LIS list (this element makes a
+			// longer LIS)
+			if (currentElement > sequence[tempLISIndex.get(tempLISIndex.size() - 1)]) {
+				tempLISIndex.add(i);
+				parentIndex[i] = tempLISIndex.get(tempLISIndex.size() - 2);
+			} else { // Lower/equal number, replace the smallest # in
+						// sequence[tempLISIndex] that is still larger than it
+				int begin = 1;
+				int end = tempLISIndex.size() - 1;
+				int middle = (begin + end) / 2;
+				while (begin != end) {
+					int comparer = sequence[tempLISIndex.get(middle)];
+					if (currentElement > comparer) {
+						begin = middle + 1;
+					} else if (currentElement < comparer) {
+						end = middle - 1;
+					} else {
+						break;
+					}
+					middle = (begin + end) / 2;
+				}
+				tempLISIndex.remove(middle);
+				tempLISIndex.add(middle, i);
+				parentIndex[i] = tempLISIndex.get(middle - 1);
+			}
+		}
+
+		// Build the overall LIS backwards with parentIndex and tempLISIndex
+		int[] subsequence = new int[tempLISIndex.size() - 1];
+		subsequence[subsequence.length - 1] = sequence[tempLISIndex.get(tempLISIndex.size() - 1)];
+		int currentIndex = tempLISIndex.get(tempLISIndex.size() - 1);
+		for (int i = subsequence.length - 2; i >= 0; i--) {
+			subsequence[i] = sequence[parentIndex[currentIndex]];
+			currentIndex = parentIndex[currentIndex];
+		}
+		return subsequence;
+	}
+
 	public static int stringEditDistance(String s1, String s2) {
 		if (s1 == null || s1.isEmpty()) {
 			return s2.length();
@@ -154,7 +237,7 @@ public class DP {
 		if (values == null || weights == null || capacity < 0) {
 			return -1;
 		}
-		
+
 		int items = values.length;
 		int[][] table = new int[items + 1][capacity + 1];
 
@@ -165,9 +248,9 @@ public class DP {
 				} else if (weights[currentItem - 1] > currentCapacity) {
 					table[currentItem][currentCapacity] = table[currentItem - 1][currentCapacity];
 				} else if (weights[currentItem - 1] <= currentCapacity) {
-					table[currentItem][currentCapacity] = Math.max(table[currentItem - 1][currentCapacity], table[currentItem - 1][currentCapacity
-							- weights[currentItem - 1]]
-							+ values[currentItem - 1]);
+					table[currentItem][currentCapacity] = Math.max(table[currentItem - 1][currentCapacity],
+							table[currentItem - 1][currentCapacity - weights[currentItem - 1]]
+									+ values[currentItem - 1]);
 				}
 			}
 		}
