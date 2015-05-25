@@ -5,7 +5,7 @@ package puzzles;
  */
 import java.util.*;
 
-public class StampDispenser {
+public class ChangeMaker {
 	private Integer[] stamps;
 
 	/**
@@ -17,7 +17,7 @@ public class StampDispenser {
 	 *            have. Should be sorted in descending order and contain at
 	 *            least a 1.
 	 */
-	public StampDispenser(int[] stampDenominations) {
+	public ChangeMaker(int[] stampDenominations) {
 		// Ensures denominations are in descending order by sorting it
 		int length = stampDenominations.length;
 		stamps = new Integer[length];
@@ -57,7 +57,7 @@ public class StampDispenser {
 
 	public static void main(String[] args) throws Exception {
 		int[] denominations = { 90, 30, 24, 10, 6, 2, 1 };
-		StampDispenser stampDispenser = new StampDispenser(denominations);
+		ChangeMaker stampDispenser = new ChangeMaker(denominations);
 		System.out.println("Should be 3 (value: 18): " + stampDispenser.calcMinNumStampsToFillRequest(18));
 	}
 }
