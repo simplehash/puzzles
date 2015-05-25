@@ -4,39 +4,30 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import puzzles.StringEditDistance;
+import puzzles.DP;
 
 public class StringEditDistanceTest {
-	StringEditDistance s;
 
 	@Test
 	public void same() throws Exception {
-		s = new StringEditDistance("fred", "fred");
-		assertEquals(0, s.getAnswer());
+		assertEquals(0, DP.stringEditDistance("fred", "fred"));
 
 	}
 
 	@Test
 	public void sameLength() throws Exception {
-		s = new StringEditDistance("derf", "fred");
-		assertEquals(4, s.getAnswer());
-		s.getMatrix();
+		assertEquals(4, DP.stringEditDistance("derf", "fred"));
 	}
 
 	@Test
 	public void different() throws Exception {
-		s = new StringEditDistance("derfasdf", "fred");
-		assertEquals(6, s.getAnswer());
-		s.getMatrix();
+		assertEquals(6, DP.stringEditDistance("derfasdf", "fred"));
 	}
 
 	@Test
 	public void empty() throws Exception {
-		s = new StringEditDistance("", "fred");
-		assertEquals(4, s.getAnswer());
-		s.getMatrix();
-		s = new StringEditDistance("fred", "");
-		assertEquals(4, s.getAnswer());
-		s.getMatrix();
+		assertEquals(4, DP.stringEditDistance("", "fred"));
+
+		assertEquals(4, DP.stringEditDistance("fred", ""));
 	}
 }

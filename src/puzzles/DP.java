@@ -1,7 +1,52 @@
 package puzzles;
 
 public class DP {
+	public static int stringEditDistance(String s1, String s2) {
+		if (s1 == null || s1.isEmpty()) {
+			return s2.length();
+		}
+		if (s2 == null || s2.isEmpty()) {
+			return s1.length();
+		}
+		if (s1.equals(s2)) {
+			return 0;
+		}
+
+		int[][] table = new int[s1.length() + 1][s2.length() + 1];
+
+		for (int i = 0; i <= s1.length(); i++) {
+			for (int j = 0; j <= s2.length(); j++) {
+				if (i == 0 && j == 0) {
+					table[i][j] = 0;
+				} else if (i == 0) {
+					table[i][j] = j;
+				} else if (j == 0) {
+					table[i][j] = i;
+				} else if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+					table[i][j] = table[i - 1][j - 1];
+				} else {
+					int substitute = table[i - 1][j - 1] + 1;
+					int delete = table[i][j - 1] + 1;
+					int add = table[i - 1][j] + 1;
+					table[i][j] = Math.min(substitute, Math.min(delete, add));
+				}
+			}
+		}
+
+		return table[s1.length()][s2.length()];
+	}
+
 	public static String diff(String s1, String s2) {
+		if (s1 == null || s1.isEmpty()) {
+			return s2;
+		}
+		if (s2 == null || s2.isEmpty()) {
+			return s1;
+		}
+		if (s1.equals(s2)) {
+			return "";
+		}
+
 		StringBuilder sb = new StringBuilder();
 		StringBuilder ops = new StringBuilder();
 
@@ -45,6 +90,13 @@ public class DP {
 	}
 
 	public static String longestCommonSubsequence(String s1, String s2) {
+		if (s1 == null || s1.isEmpty() || s2 == null || s2.isEmpty()) {
+			return "";
+		}
+		if (s1.equals(s2)) {
+			return s1;
+		}
+
 		int[][] table = new int[s1.length() + 1][s2.length() + 1];
 
 		for (int i = 0; i <= s1.length(); i++) {
@@ -78,6 +130,10 @@ public class DP {
 	}
 
 	public static int changeMaker(int[] denominations, int value) {
+		if (denominations == null || denominations.length < 1 || value < 0) {
+			return -1;
+		}
+
 		int[] values = new int[value + 1];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = Integer.MAX_VALUE;
@@ -95,6 +151,10 @@ public class DP {
 	}
 
 	public static int knapsack01(int[] values, int[] weights, int capacity) {
+		if (values == null || weights == null || capacity < 0) {
+			return -1;
+		}
+		
 		int items = values.length;
 		int[][] table = new int[items + 1][capacity + 1];
 
