@@ -4,7 +4,7 @@ public class TreeLCA {
 	public static Node treeRecursive(Node node, int v1, int v2) {
 		// LCA search for generic binary trees
 		if (node == null || node.value() == v1 || node.value() == v2) { // Found
-																	// one!
+			// one!
 			return node;
 		} else {
 			Node leftTree = treeRecursive(node.left(), v1, v2);
@@ -54,10 +54,12 @@ public class TreeLCA {
 		}
 		return answer;
 	}
-	
+
 	interface Node {
 		int value();
+
 		Node left();
+
 		Node right();
 	}
 }

@@ -248,9 +248,9 @@ public class DP {
 				} else if (weights[currentItem - 1] > currentCapacity) {
 					table[currentItem][currentCapacity] = table[currentItem - 1][currentCapacity];
 				} else if (weights[currentItem - 1] <= currentCapacity) {
-					table[currentItem][currentCapacity] = Math.max(table[currentItem - 1][currentCapacity],
-							table[currentItem - 1][currentCapacity - weights[currentItem - 1]]
-									+ values[currentItem - 1]);
+					table[currentItem][currentCapacity] = Math.max(table[currentItem - 1][currentCapacity], table[currentItem - 1][currentCapacity
+							- weights[currentItem - 1]]
+							+ values[currentItem - 1]);
 				}
 			}
 		}

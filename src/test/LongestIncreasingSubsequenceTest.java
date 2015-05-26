@@ -12,11 +12,9 @@ public class LongestIncreasingSubsequenceTest {
 
 	@Test
 	public void happy() {
-		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 2, 6, 3, 4, 1, 2, 9, 5, 8 }), new int[] {
-				2, 3, 4, 5, 8 }));
+		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 2, 6, 3, 4, 1, 2, 9, 5, 8 }), new int[] { 2, 3, 4, 5, 8 }));
 
-		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 2, 3, 4, 5, 1, 9 }), new int[] { 2, 3, 4,
-				5, 9 }));
+		assertTrue(Arrays.equals(DP.longestIncreasingSubsequence(new int[] { 2, 3, 4, 5, 1, 9 }), new int[] { 2, 3, 4, 5, 9 }));
 	}
 
 	@Test
