@@ -2,7 +2,7 @@ package puzzles;
 
 import java.util.*;
 
-public class ConsecutiveSum {
+public class ConsecutiveSumEqualTo {
 	public static List<Integer> go(int[] numbers, int sum) {
 		if (numbers == null) {
 			return null;
