@@ -44,6 +44,9 @@ public class SetStuff {
 	}
 
 	public static Set<String> powerset(String set) {
+		if (set == null) {
+			return null;
+		}
 		/*
 		 * Powerset is the set of all subsets, therefore this method solves the
 		 * subsets problem too
@@ -60,6 +63,10 @@ public class SetStuff {
 	}
 
 	public static Set<String> rInK(String set, int length) {
+		if (set == null || length < 1) {
+			return null;
+		}
+
 		Set<String> answer = new HashSet<>();
 		Set<String> tempAnswer = powerset(set);
 
@@ -68,7 +75,6 @@ public class SetStuff {
 				answer.add(s);
 			}
 		}
-
 		return answer;
 	}
 }

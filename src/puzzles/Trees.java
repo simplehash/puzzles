@@ -54,7 +54,6 @@ public class Trees {
 	}
 
 	public static Node lowestCommonAncestor(Node node, int v1, int v2) {
-
 		// LCA search for generic binary trees
 		if (node == null || node.value() == v1 || node.value() == v2) { // Found
 			// one!
