@@ -1,6 +1,23 @@
 package puzzles;
 
 public class Trees {
+	public static boolean isSymmetric(Node n) {
+		if (n == null) {
+			return true;
+		}
+		return isSymmetric(n.left(), n.right());
+	}
+
+	private static boolean isSymmetric(Node left, Node right) {
+		if (left == null && right == null) {
+			return true;
+		}
+		if (left != null && right != null && left.value() == right.value()) {
+			return isSymmetric(left.left(), right.right()) && isSymmetric(left.right(), right.left());
+		}
+		return false;
+	}
+
 	public static boolean checkBST(Node n) {
 		/*
 		 * Checks that a tree is a binary search tree. Starts with the root and
