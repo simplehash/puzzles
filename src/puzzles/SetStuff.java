@@ -3,6 +3,25 @@ package puzzles;
 import java.util.*;
 
 public class SetStuff {
+	public static void main(String[] args) {
+		List<String> a = powerset("abc");
+		for (String c : a) {
+			System.out.println(c);
+		}
+	}
+
+	public static List<String> powerset(String set) {
+		List<String> answer = new ArrayList<>();
+		for (char c : set.toCharArray()) {
+			int prevSize = answer.size();
+			for (int i = 0; i < prevSize; i++) {
+				answer.add(answer.get(i) + Character.toString(c));
+			}
+			answer.add(Character.toString(c));
+		}
+		return answer;
+	}
+
 	public static List<String> subsets(String set) {
 		List<String> answer = new ArrayList<>();
 		List<String> temp = new ArrayList<>();
@@ -16,7 +35,7 @@ public class SetStuff {
 
 			temp.clear();
 			for (int j = 0; j < answer.size(); j++) {
-				temp.add(s + answer.get(j));
+				temp.add(answer.get(j) + s);
 			}
 			/*
 			 * Be sure to add the character itself after appending it to all
@@ -39,12 +58,5 @@ public class SetStuff {
 		}
 
 		return answer;
-	}
-
-	public static void main(String[] args) {
-		List<String> answer = rInK("abcdef", 2);
-		for (String a : answer) {
-			System.out.println(a);
-		}
 	}
 }
