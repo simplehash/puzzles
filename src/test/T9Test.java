@@ -6,7 +6,7 @@ import java.util.*;
 
 import org.junit.Test;
 
-import puzzles.T9;
+import puzzles.SetStuff;
 
 public class T9Test {
 
@@ -27,13 +27,13 @@ public class T9Test {
 
 	@Test
 	public void invalid() {
-		T9.go(null);
-		T9.go("");
-		T9.go("asf");
+		SetStuff.t9(null);
+		SetStuff.t9("");
+		SetStuff.t9("asf");
 	}
 
 	public void base(String numbers) {
-		Set<String> answer = T9.go(numbers);
+		Set<String> answer = SetStuff.t9(numbers);
 		System.out.print(numbers + ": ");
 		for (String s : answer) {
 			System.out.print(s + " ");
