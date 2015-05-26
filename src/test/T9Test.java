@@ -33,7 +33,7 @@ public class T9Test {
 	}
 
 	public void base(String numbers) {
-		List<String> answer = T9.go(numbers);
+		Set<String> answer = T9.go(numbers);
 		System.out.print(numbers + ": ");
 		for (String s : answer) {
 			System.out.print(s + " ");

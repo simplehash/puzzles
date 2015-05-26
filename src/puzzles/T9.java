@@ -3,22 +3,22 @@ package puzzles;
 import java.util.*;
 
 public class T9 {
-	private static List<String> answer;
+	private static Set<String> answer;
 	private final static String[] dialPad = new String[] { "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
 
-	public static List<String> go(String numbers) {
+	public static Set<String> go(String numbers) {
 		try {
 			Integer.parseInt(numbers);
 		} catch (NumberFormatException e) {
 			System.err.println("Invalid number entered");
 			return null;
 		}
-		answer = new ArrayList<>();
+		answer = new HashSet<>();
 		return go("", numbers);
 	}
 
-	private static List<String> go(String prefix, String suffix) {
-		if (suffix.length() == 0) {
+	private static Set<String> go(String prefix, String suffix) {
+		if (suffix.isEmpty()) {
 			answer.add(prefix);
 		} else {
 			String letters = dialPad[Integer.parseInt(suffix.substring(0, 1))];
