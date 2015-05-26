@@ -18,18 +18,18 @@ public class SetStuff {
 		return t9("", numbers);
 	}
 
-	private static Set<String> t9(String prefix, String suffix) {
+	private static Set<String> t9(String prefix, String numbers) {
 		// prefix is the combo is various letters translated from T9 dialpad,
 		// suffix is the numbers remaining to be translated
-		if (suffix.isEmpty()) {
+		if (numbers.isEmpty()) {
 			answer.add(prefix);
 		} else {
-			String letters = dialPad[Integer.parseInt(suffix.substring(0, 1))];
+			String letters = dialPad[Integer.parseInt(numbers.substring(0, 1))];
 			if (letters.isEmpty()) {
-				t9(prefix, suffix.substring(1));
+				t9(prefix, numbers.substring(1));
 			} else {
 				for (char c : letters.toCharArray()) {
-					t9(prefix + c, suffix.substring(1));
+					t9(prefix + c, numbers.substring(1));
 				}
 			}
 		}
