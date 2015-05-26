@@ -4,13 +4,17 @@ import java.util.*;
 
 public class SetStuff {
 	public static void main(String[] args) {
-		List<String> a = powerset("abc");
+		Set<String> a = rInK("abcdef", 3);
 		for (String c : a) {
 			System.out.println(c);
 		}
 	}
 
-	public static List<String> powerset(String set) {
+	public static Set<String> powerset(String set) {
+		/*
+		 * Powerset is the set of all subsets, therefore this method solves the
+		 * subsets problem too
+		 */
 		List<String> answer = new ArrayList<>();
 		for (char c : set.toCharArray()) {
 			int prevSize = answer.size();
@@ -19,37 +23,12 @@ public class SetStuff {
 			}
 			answer.add(Character.toString(c));
 		}
-		return answer;
+		return new HashSet<>(answer);
 	}
 
-	public static List<String> subsets(String set) {
-		List<String> answer = new ArrayList<>();
-		List<String> temp = new ArrayList<>();
-
-		/*
-		 * For each character in the set, append it to all current results in
-		 * the set then include the character itself in the set
-		 */
-		for (int i = 0; i < set.length(); i++) {
-			String s = Character.toString(set.charAt(i));
-
-			temp.clear();
-			for (int j = 0; j < answer.size(); j++) {
-				temp.add(answer.get(j) + s);
-			}
-			/*
-			 * Be sure to add the character itself after appending it to all
-			 * current results else you will get the character twice
-			 */
-			answer.add(s);
-			answer.addAll(temp);
-		}
-		return answer;
-	}
-
-	public static List<String> rInK(String set, int length) {
-		List<String> answer = new ArrayList<>();
-		List<String> tempAnswer = subsets(set);
+	public static Set<String> rInK(String set, int length) {
+		Set<String> answer = new HashSet<>();
+		Set<String> tempAnswer = powerset(set);
 
 		for (String s : tempAnswer) {
 			if (s.length() == length) {
