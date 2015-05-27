@@ -23,11 +23,13 @@ public class Transaction {
 
 		if (command.equals("get") || command.equals("unset")) {
 			key = args[1];
-		} else if (command.equals("set")) {
-			key = args[1];
-			value = args[2];
-		} else if (command.equals("numequalto")) {
-			value = args[1];
+		} else if (command.equals("set") || command.equals("numequalto")) {
+			if (command.equals("set")) {
+				key = args[1];
+				value = args[2];
+			} else {
+				value = args[1];
+			}
 			if (currentValueCount.containsKey(value)) {
 				valueCount = currentValueCount.get(value);
 			}
