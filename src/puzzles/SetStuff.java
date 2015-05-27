@@ -4,8 +4,7 @@ import java.util.*;
 
 public class SetStuff {
 	private static Set<String> answer;
-	private final static String[] dialPad = new String[] { "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv",
-			"wxyz" };
+	private final static String[] dialPad = new String[] { "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
 
 	public static Set<String> t9(String numbers) {
 		try {
