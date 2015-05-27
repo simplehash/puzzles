@@ -17,22 +17,6 @@ public class Main {
 		return transactions.size();
 	}
 
-	private static void unset(String name) {
-
-	}
-
-	private static void get(String name) {
-
-	}
-
-	private static void numequalto(String name) {
-
-	}
-
-	private static void set(String name, String value) {
-
-	}
-
 	private static void begin() {
 
 	}
@@ -45,11 +29,7 @@ public class Main {
 
 	}
 
-	private static void runTransactionCommand(String name, String value) {
-
-	}
-
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		database = new HashMap<>();
 		transactions = new Stack<>();
 		valueCount = new HashMap<>();
@@ -58,25 +38,18 @@ public class Main {
 		String command = "";
 		Transaction t = new Transaction();
 		while (!command.equals("end")) {
-			try {
-				command = br.readLine();
-				String[] temp = command.split(" ");
-				temp[0] = temp[0].toLowerCase().trim();
-				if (temp[0].equals("set") || temp.length == 3) {
+			command = br.readLine();
+			String[] temp = command.split(" ");
+			temp[0] = temp[0].toLowerCase().trim();
+			if (temp[0].equals("set") || temp.length == 3) {
+				t.add(temp[0], temp[1], temp[2]);
+			} else if (temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto")
+					&& temp.length == 2) {
+				t.add(temp[0], temp[1]);
+			} else if (temp[0].equals("begin") || temp[0].equals("rollback") || temp[0].equals("commit")) {
 
-				} else if (temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto")
-						&& temp.length == 2) {
-					t.add(temp[0], temp[1]);
-				} else if (temp[0].equals("begin") || temp[0].equals("rollback") || temp[0].equals("commit")) {
-
-				}
-			} catch (IOException e) {
-				System.err.println("I/O error while reading command.");
-				return;
 			}
 		}
-		while (!t.isEmpty()) {
-
-		}
+		t.commit(database);
 	}
 }
