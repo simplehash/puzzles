@@ -40,19 +40,16 @@ public class Main {
 		String command = "";
 		Transaction currentTransaction = new Transaction();
 		while (!command.equalsIgnoreCase("end")) {
-			System.out.print("Depth: " + Transactions.transactions.size());
+			System.out.print("Depth: " + Transactions.transactions.size() + " SimpleDB:> ");
 			command = br.readLine().trim();
 			String[] temp = command.split(" ");
 			temp[0] = temp[0].toLowerCase().trim();
 
-			if (temp[0].equals("set") || temp.length == 3) {
+			if (temp[0].equals("set") && temp.length == 3) {
 				currentTransaction.addCommand(temp[0], temp[1], temp[2]);
-			} else if (temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto")
+			} else if ((temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto"))
 					&& temp.length == 2) {
-				String reply = currentTransaction.addCommand(temp[0], temp[1]);
-				if (!temp[0].equals("unset")) {
-					System.out.print(reply);
-				}
+				System.out.println(" " + currentTransaction.addCommand(temp[0], temp[1]));
 			} else if (temp[0].equals("begin")) {
 				currentTransaction = Transactions.begin(currentTransaction);
 			} else if (temp[0].equals("rollback")) {
