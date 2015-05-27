@@ -15,7 +15,7 @@ public class Transaction {
 		justDeleted = new HashSet<>();
 	}
 
-	public String add(String... args) {
+	public String addCommand(String... args) {
 		String command = args[0];
 		String key = null;
 		String value = null;
@@ -99,12 +99,11 @@ public class Transaction {
 		return null;
 	}
 
-	public void commit(Map<String, String> database) throws Exception {
+	public void commit(Map<String, String> database, Set<String> ignoredKeys) throws Exception {
 		/*
 		 * Because commands are stored in a stack (LIFO), once a key is actioned
 		 * upon we can ignore it for all future occurrences
 		 */
-		Set<String> ignoredKeys = new HashSet<>();
 		while (!commands.isEmpty()) {
 			String[] commandArray = commands.pop();
 			String key = commandArray[1];
