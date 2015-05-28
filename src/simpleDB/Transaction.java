@@ -45,7 +45,7 @@ public class Transaction {
 		return database.get(key);
 	}
 
-	public void set(String key, String value) {
+	public void set(String key, String value, Stack<Transaction> transactions, Map<String, String> db, Map<String, Integer> countMap) {
 		/*
 		 * Set: push the command on the stack for easy rollback/commit, put the
 		 * addition into the cache, increment cached value count
@@ -59,10 +59,44 @@ public class Transaction {
 
 		commands.push(new String[] { "set", key, value });
 
-		String oldValue = currentState.get(key);
-		if (oldValue != null) {
-			int oldCount = currentValueCount.get(oldValue);
-			currentValueCount.put(oldValue, --oldCount);
+		/*
+		 * If we are unsetting a value that doesn't exist in the current
+		 * transaction but does in lower level ones or in the main DB, check
+		 */
+		String oldValue = null;
+		int oldValueCount = 0;
+		boolean exists = false;
+
+		if (currentState.containsKey(key)) {
+			// Reducing value count in current block
+			oldValue = currentState.get(key);
+			oldValueCount = currentValueCount.get(value);
+			exists = true;
+		} else {
+			/*
+			 * Check lower level transactions for the key's value and the
+			 * value's count
+			 */
+			Iterator<Transaction> i = transactions.iterator();
+			while (i.hasNext()) {
+				Transaction lowerLevel = i.next();
+				Map<String, String> lowerLevelDB = lowerLevel.currentState;
+				if (lowerLevelDB.containsKey(key)) {
+					oldValue = lowerLevelDB.get(key);
+					exists = true;
+				}
+			}
+		}
+		/*
+		 * Check the main DB for the key's value and the value's count
+		 */
+		if (oldValue == null && db.containsKey(key)) {
+			oldValue = db.get(key);
+			exists = true;
+		}
+
+		if (exists) {
+			currentValueCount.put(oldValue, --oldValueCount);
 		}
 
 		currentState.put(key, value);
@@ -97,6 +131,7 @@ public class Transaction {
 				if (lowerLevelState.containsKey(key)) {
 					exists = true;
 					value = lowerLevelState.get(key);
+					break;
 				}
 			}
 		}
@@ -135,6 +170,7 @@ public class Transaction {
 			Map<String, Integer> lowerLevelValueCount = iterator.next().currentValueCount;
 			if (lowerLevelValueCount.containsKey(value)) {
 				current += lowerLevelValueCount.get(value);
+				break;
 			}
 		}
 
@@ -153,7 +189,10 @@ public class Transaction {
 			if (!ignoredKeys.contains(key)) {
 				ignoredKeys.add(key);
 				String command = commandArray[0];
-				String value = commandArray[2];
+				String value = null;
+				if (commandArray.length == 3) {
+					value = commandArray[2];
+				}
 
 				if (command.equals("set") || command.equals("unset")) {
 					if (command.equals("set")) {
@@ -161,18 +200,25 @@ public class Transaction {
 					} else {
 						database.remove(key);
 					}
-					int currentCount = 0;
-					if (currentValueCount.containsKey(value)) {
-						currentCount = currentValueCount.get(value);
-					}
-					int dbCount = 0;
-					if (valueMap.containsKey(value)) {
-						dbCount = valueMap.get(value);
-					}
-					valueMap.put(value, currentCount + dbCount);
-				} else {
-					throw new Exception("Unknown command in transaction command history: " + command + " " + key);
 				}
+			}
+		}
+
+		Iterator<String> i = currentValueCount.keySet().iterator();
+		while (i.hasNext()) {
+			String value = i.next();
+
+			int currentCount = currentValueCount.get(value);
+
+			int dbCount = 0;
+			if (valueMap.containsKey(value)) {
+				dbCount = valueMap.get(value);
+			}
+
+			if (currentCount + dbCount > 0) {
+				valueMap.put(value, currentCount + dbCount);
+			} else {
+				valueMap.remove(value);
 			}
 		}
 	}
