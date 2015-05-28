@@ -70,6 +70,11 @@ public class Transaction {
 		if (currentState.containsKey(key)) {
 			// Reducing value count in current block
 			oldValue = currentState.get(key);
+			/*
+			 * oldValueCount is only updated if the value exists in the current
+			 * transaction block because each transaction stores the delta of
+			 * value counts
+			 */
 			oldValueCount = currentValueCount.get(value);
 			exists = true;
 		} else {
@@ -84,6 +89,7 @@ public class Transaction {
 				if (lowerLevelDB.containsKey(key)) {
 					oldValue = lowerLevelDB.get(key);
 					exists = true;
+					break;
 				}
 			}
 		}

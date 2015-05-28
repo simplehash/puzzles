@@ -73,18 +73,18 @@ public class Main {
 					System.out.println(" " + reply);
 				} else if (temp[0].equals("unset")) {
 					currentTransaction.unset(database, Transactions.transactions, temp[1]);
+
+					if (Transactions.depth() == 0) {
+						Transactions.transactions.push(currentTransaction);
+						Transactions.commit();
+						currentTransaction = new Transaction();
+					}
 				} else if (temp[0].equals("numequalto")) {
 					reply = currentTransaction.numequalto(valueCount, Transactions.transactions, temp[1]);
 					if (reply == null) {
 						reply = "0";
 					}
 					System.out.println(" " + reply);
-				}
-
-				if (Transactions.depth() == 0) {
-					Transactions.transactions.push(currentTransaction);
-					Transactions.commit();
-					currentTransaction = new Transaction();
 				}
 			} else if (temp[0].equals("begin")) {
 				currentTransaction = Transactions.begin(currentTransaction);
@@ -105,7 +105,5 @@ public class Main {
 				}
 			}
 		}
-		Transactions.transactions.push(currentTransaction);
-		Transactions.commit();
 	}
 }
