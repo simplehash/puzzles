@@ -20,120 +20,125 @@ public class Transaction {
 		justDeleted = new HashSet<>();
 	}
 
-	public String addCommand(Map<String, String> database, Map<String, Integer> valueMap, Stack<Transaction> transactions, String... args) {
-		String command = args[0];
-		String key = null;
-		String value = null;
+	public String get(Map<String, String> database, Stack<Transaction> transactions, String key) {
+		if (currentState.containsKey(key) || justDeleted.contains(key)) {
+			/*
+			 * If the get value exists in current state, take it from there. If
+			 * it's in justDelete (meaning it exists in the main DB but was
+			 * unset in a transaction), then return null
+			 */
+			return currentState.get(key);
+		}
+
+		/*
+		 * If the currentState doesn't contain the key, check all transaction
+		 * levels before checking main DB
+		 */
+		Iterator<Transaction> iterator = transactions.iterator();
+		while (iterator.hasNext()) {
+			Map<String, String> lowerLevelMap = iterator.next().currentState;
+			if (lowerLevelMap.containsKey(key)) {
+				return lowerLevelMap.get(key);
+			}
+		}
+
+		return database.get(key);
+	}
+
+	public void set(String key, String value) {
+		/*
+		 * Set: push the command on the stack for easy rollback/commit, put the
+		 * addition into the cache, increment cached value count
+		 * 
+		 * Recall that set <name> <value> is actually 3 parts
+		 */
 		int valueCount = 0;
-
-		if (command.equals("get") || command.equals("unset")) {
-			key = args[1];
-		} else if (command.equals("set") || command.equals("numequalto")) {
-			if (command.equals("set")) {
-				key = args[1];
-				value = args[2];
-			} else {
-				value = args[1];
-			}
-			if (currentValueCount.containsKey(value)) {
-				valueCount = currentValueCount.get(value);
-			}
+		if (currentValueCount.containsKey(value)) {
+			valueCount = currentValueCount.get(value);
 		}
 
-		if (command.equals("set")) {
-			/*
-			 * Set: push the command on the stack for easy rollback/commit, put
-			 * the addition into the cache, increment cached value count
-			 * 
-			 * Recall that set <name> <value> is actually 3 parts
-			 */
-			commands.push(new String[] { command, key, value });
-			String oldValue = currentState.get(key);
-			if (oldValue != null) {
-				int oldCount = currentValueCount.get(oldValue);
-				currentValueCount.put(oldValue, --oldCount);
-			}
-			currentState.put(key, value);
-			currentValueCount.put(value, ++valueCount);
-			return "";
-		}
-		if (command.equals("unset")) {
-			/*
-			 * Unset: push command onto stack for easy rollback/commit
-			 * 
-			 * Add the deleted key/value pair to justDeleted if it exists in the
-			 * permanent DB. This takes care of the case where unset is called
-			 * on an unset value that exists in the permanent DB
-			 * 
-			 * Decrement the currentValueCount for the key/value pair if the
-			 * key/value pair existed in either the permanent or current DBs
-			 */
-			commands.push(new String[] { command, key });
-			justDeleted.add(key);
+		commands.push(new String[] { "set", key, value });
 
-			boolean existsInOtherTransactions = false;
+		String oldValue = currentState.get(key);
+		if (oldValue != null) {
+			int oldCount = currentValueCount.get(oldValue);
+			currentValueCount.put(oldValue, --oldCount);
+		}
+
+		currentState.put(key, value);
+		currentValueCount.put(value, ++valueCount);
+	}
+
+	public void unset(Map<String, String> database, Stack<Transaction> transactions, String key) {
+		/*
+		 * Unset: push command onto stack for easy rollback/commit
+		 * 
+		 * Add the deleted key/value pair to justDeleted if it exists in the
+		 * permanent DB. This takes care of the case where unset is called on an
+		 * unset value that exists in the permanent DB
+		 * 
+		 * Decrement the currentValueCount for the key/value pair if the
+		 * key/value pair existed in either the permanent or current DBs
+		 */
+
+		String value = null;
+		boolean exists = false;
+
+		if (database.containsKey(key)) {
+			exists = true;
+			value = database.get(key);
+		} else if (currentState.containsKey(key)) {
+			exists = true;
+			value = currentState.get(key);
+		} else {
 			Iterator<Transaction> iterator = transactions.iterator();
 			while (iterator.hasNext()) {
 				Map<String, String> lowerLevelState = iterator.next().currentState;
 				if (lowerLevelState.containsKey(key)) {
-					existsInOtherTransactions = true;
+					exists = true;
 					value = lowerLevelState.get(key);
 				}
 			}
-			if (database.containsKey(key) || currentState.containsKey(key) || existsInOtherTransactions) {
-				currentValueCount.put(value, --valueCount);
-				currentState.remove(key);
-			}
-			return "";
 		}
-		if (command.equals("get")) {
-			if (currentState.containsKey(key) || justDeleted.contains(key)) {
-				/*
-				 * If the get value exists in current state, take it from there.
-				 * If it's in justDelete (meaning it exists in the main DB but
-				 * was unset in a transaction), then return null
-				 */
-				return currentState.get(key);
-			}
-			Iterator<Transaction> iterator = transactions.iterator();
 
-			/*
-			 * If the currentState doesn't contain the key, check all
-			 * transaction levels before checking main DB
-			 */
-			while (iterator.hasNext()) {
-				Map<String, String> lowerLevelMap = iterator.next().currentState;
-				if (lowerLevelMap.containsKey(key)) {
-					return lowerLevelMap.get(key);
-				}
-			}
-			return database.get(key);
-		}
-		if (command.equals("numequalto")) {
-			/*
-			 * Just return the sum of the counts in the permanent DB and all
-			 * transactions
-			 */
-			Integer current = currentValueCount.get(value);
-			Integer permanent = valueMap.get(value);
-			if (current == null) {
-				current = 0;
-			}
-			if (permanent == null) {
-				permanent = 0;
+		if (exists) {
+			commands.push(new String[] { "unset", key });
+			justDeleted.add(key);
+
+			int valueCount = 0;
+			if (currentValueCount.containsKey(value)) {
+				valueCount = currentValueCount.get(value);
 			}
 
-			Iterator<Transaction> iterator = transactions.iterator();
-			while (iterator.hasNext()) {
-				Map<String, Integer> lowerLevelValueCount = iterator.next().currentValueCount;
-				if (lowerLevelValueCount.containsKey(value)) {
-					current += lowerLevelValueCount.get(value);
-				}
-			}
-
-			return String.valueOf(current + permanent);
+			currentValueCount.put(value, --valueCount);
+			currentState.remove(key);
 		}
-		return null;
+	}
+
+	public String numequalto(Map<String, Integer> valueMap, Stack<Transaction> transactions, String value) {
+		/*
+		 * Just return the sum of the counts in the permanent DB and all
+		 * transactions
+		 */
+		Integer current = currentValueCount.get(value);
+		if (current == null) {
+			current = 0;
+		}
+
+		Integer permanent = valueMap.get(value);
+		if (permanent == null) {
+			permanent = 0;
+		}
+
+		Iterator<Transaction> iterator = transactions.iterator();
+		while (iterator.hasNext()) {
+			Map<String, Integer> lowerLevelValueCount = iterator.next().currentValueCount;
+			if (lowerLevelValueCount.containsKey(value)) {
+				current += lowerLevelValueCount.get(value);
+			}
+		}
+
+		return String.valueOf(current + permanent);
 	}
 
 	public void commit(Map<String, String> database, Map<String, Integer> valueMap, Set<String> ignoredKeys) throws Exception {

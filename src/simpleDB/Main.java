@@ -49,11 +49,16 @@ public class Main {
 			temp[0] = temp[0].toLowerCase().trim();
 
 			if (temp[0].equals("set") && temp.length == 3) {
-				/* Set commands have 3 parts */
-				currentTransaction.addCommand(database, valueCount, Transactions.transactions, temp[0], temp[1], temp[2]);
-			} else if ((temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto")) && temp.length == 2) {
-				/* Get, Unset, and Numequalto commands have 2 parts */
-				String reply = currentTransaction.addCommand(database, valueCount, Transactions.transactions, temp[0], temp[1]);
+				currentTransaction.set(temp[1], temp[2]);
+			} else if (temp.length == 2) {
+				String reply = null;
+				if (temp[0].equals("get")) {
+					reply = currentTransaction.get(database, Transactions.transactions, temp[1]);
+				} else if (temp[0].equals("unset")) {
+					currentTransaction.unset(database, Transactions.transactions, temp[1]);
+				} else if (temp[0].equals("numequalto")) {
+					reply = currentTransaction.numequalto(valueCount, Transactions.transactions, temp[1]);
+				}
 				if (reply == null) {
 					reply = "NULL";
 				}
