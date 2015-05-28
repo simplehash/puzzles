@@ -1,6 +1,11 @@
 package simpleDB;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 public class Transaction {
 	private Stack<String[]> commands;
@@ -15,7 +20,7 @@ public class Transaction {
 		justDeleted = new HashSet<>();
 	}
 
-	public String addCommand(String... args) {
+	public String addCommand(Map<String, String> database, Map<String, Integer> valueMap, Stack<Transaction> transactions, String... args) {
 		String command = args[0];
 		String key = null;
 		String value = null;
@@ -43,6 +48,11 @@ public class Transaction {
 			 * Recall that set <name> <value> is actually 3 parts
 			 */
 			commands.push(new String[] { command, key, value });
+			String oldValue = currentState.get(key);
+			if (oldValue != null) {
+				int oldCount = currentValueCount.get(oldValue);
+				currentValueCount.put(oldValue, --oldCount);
+			}
 			currentState.put(key, value);
 			currentValueCount.put(value, ++valueCount);
 			return "";
@@ -59,14 +69,18 @@ public class Transaction {
 			 * key/value pair existed in either the permanent or current DBs
 			 */
 			commands.push(new String[] { command, key });
-			/*
-			 * Only reduce a valueCount if the key/value to be removed exists in
-			 * the original DB or transaction's state
-			 */
-			if (Main.database.containsKey(key)) {
-				justDeleted.add(key);
+			justDeleted.add(key);
+
+			boolean existsInOtherTransactions = false;
+			Iterator<Transaction> iterator = transactions.iterator();
+			while (iterator.hasNext()) {
+				Map<String, String> lowerLevelState = iterator.next().currentState;
+				if (lowerLevelState.containsKey(key)) {
+					existsInOtherTransactions = true;
+					value = lowerLevelState.get(key);
+				}
 			}
-			if (Main.database.containsKey(key) || currentState.containsKey(key)) {
+			if (database.containsKey(key) || currentState.containsKey(key) || existsInOtherTransactions) {
 				currentValueCount.put(value, --valueCount);
 				currentState.remove(key);
 			}
@@ -81,27 +95,48 @@ public class Transaction {
 				 */
 				return currentState.get(key);
 			}
-			return Main.database.get(key);
+			Iterator<Transaction> iterator = transactions.iterator();
+
+			/*
+			 * If the currentState doesn't contain the key, check all
+			 * transaction levels before checking main DB
+			 */
+			while (iterator.hasNext()) {
+				Map<String, String> lowerLevelMap = iterator.next().currentState;
+				if (lowerLevelMap.containsKey(key)) {
+					return lowerLevelMap.get(key);
+				}
+			}
+			return database.get(key);
 		}
 		if (command.equals("numequalto")) {
 			/*
-			 * Jsut return the sum of the counts in the permanent DB and current
-			 * transaction's state
+			 * Just return the sum of the counts in the permanent DB and all
+			 * transactions
 			 */
 			Integer current = currentValueCount.get(value);
-			Integer permanent = Main.valueCount.get(value);
+			Integer permanent = valueMap.get(value);
 			if (current == null) {
 				current = 0;
 			}
 			if (permanent == null) {
 				permanent = 0;
 			}
+
+			Iterator<Transaction> iterator = transactions.iterator();
+			while (iterator.hasNext()) {
+				Map<String, Integer> lowerLevelValueCount = iterator.next().currentValueCount;
+				if (lowerLevelValueCount.containsKey(value)) {
+					current += lowerLevelValueCount.get(value);
+				}
+			}
+
 			return String.valueOf(current + permanent);
 		}
 		return null;
 	}
 
-	public void commit(Map<String, String> database, Set<String> ignoredKeys) throws Exception {
+	public void commit(Map<String, String> database, Map<String, Integer> valueMap, Set<String> ignoredKeys) throws Exception {
 		/*
 		 * Because commands are stored in a stack (LIFO), once a key is actioned
 		 * upon we can ignore it for all future occurrences
@@ -111,17 +146,28 @@ public class Transaction {
 			String key = commandArray[1];
 
 			if (!ignoredKeys.contains(key)) {
+				ignoredKeys.add(key);
 				String command = commandArray[0];
 				String value = commandArray[2];
 
-				if (command.equals("set")) {
-					database.put(key, value);
-				} else if (command.equals("unset")) {
-					database.remove(key);
+				if (command.equals("set") || command.equals("unset")) {
+					if (command.equals("set")) {
+						database.put(key, value);
+					} else {
+						database.remove(key);
+					}
+					int currentCount = 0;
+					if (currentValueCount.containsKey(value)) {
+						currentCount = currentValueCount.get(value);
+					}
+					int dbCount = 0;
+					if (valueMap.containsKey(value)) {
+						dbCount = valueMap.get(value);
+					}
+					valueMap.put(value, currentCount + dbCount);
 				} else {
 					throw new Exception("Unknown command in transaction command history: " + command + " " + key);
 				}
-				ignoredKeys.add(key);
 			}
 		}
 	}

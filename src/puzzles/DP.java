@@ -1,6 +1,7 @@
 package puzzles;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DP {
 	public static boolean wordSegmentation(String s, List<String> dictionary) {

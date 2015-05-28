@@ -1,18 +1,19 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
 import puzzles.TopologicalSort;
-import java.util.*;
 
 public class TopologicalSortTest {
 
 	@Test
 	public void happy() {
-		int[][] adjacencyMatrix = new int[][] { { 0, 1, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 1, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 0 } };
+		int[][] adjacencyMatrix = new int[][] { { 0, 1, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 0 } };
 		Set<Integer> top = TopologicalSort.bfs(adjacencyMatrix, new Integer[] { 2 });
 		Set<Integer> correct = new LinkedHashSet<>();
 		correct.add(2);

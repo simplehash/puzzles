@@ -1,6 +1,7 @@
 package puzzles;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConsecutiveSumEqualTo {
 	public static List<Integer> go(int[] numbers, int sum) {

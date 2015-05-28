@@ -1,6 +1,7 @@
 package test;
 
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import puzzles.TVKeyboard;

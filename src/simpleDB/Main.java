@@ -1,13 +1,16 @@
 package simpleDB;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 public class Main {
-	static Map<String, String> database;
-	static Map<String, Integer> valueCount;
+	private static Map<String, String> database;
+	private static Map<String, Integer> valueCount;
 
 	private static class Transactions {
 		private static Stack<Transaction> transactions = new Stack<>();
@@ -20,7 +23,7 @@ public class Main {
 
 		private static void commit() throws Exception {
 			while (!transactions.isEmpty()) {
-				transactions.pop().commit(database, ignoredKeys);
+				transactions.pop().commit(database, valueCount, ignoredKeys);
 			}
 		}
 
@@ -46,21 +49,28 @@ public class Main {
 			temp[0] = temp[0].toLowerCase().trim();
 
 			if (temp[0].equals("set") && temp.length == 3) {
-				currentTransaction.addCommand(temp[0], temp[1], temp[2]);
-			} else if ((temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto"))
-					&& temp.length == 2) {
-				System.out.println(" " + currentTransaction.addCommand(temp[0], temp[1]));
+				/* Set commands have 3 parts */
+				currentTransaction.addCommand(database, valueCount, Transactions.transactions, temp[0], temp[1], temp[2]);
+			} else if ((temp[0].equals("get") || temp[0].equals("unset") || temp[0].equals("numequalto")) && temp.length == 2) {
+				/* Get, Unset, and Numequalto commands have 2 parts */
+				String reply = currentTransaction.addCommand(database, valueCount, Transactions.transactions, temp[0], temp[1]);
+				if (reply == null) {
+					reply = "NULL";
+				}
+				System.out.println(" " + reply);
 			} else if (temp[0].equals("begin")) {
 				currentTransaction = Transactions.begin(currentTransaction);
 			} else if (temp[0].equals("rollback")) {
 				Transaction tempTransaction = Transactions.rollback();
 				if (tempTransaction == null) {
-					System.out.println("NULL");
+					System.out.println("NO TRANSACTION");
 				} else {
 					currentTransaction = tempTransaction;
 				}
 			} else if (temp[0].equals("commit")) {
+				Transactions.transactions.push(currentTransaction);
 				Transactions.commit();
+				currentTransaction = new Transaction();
 			}
 		}
 		Transactions.commit();
