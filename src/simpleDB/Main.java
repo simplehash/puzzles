@@ -74,6 +74,7 @@ public class Main {
 				} else if (temp[0].equals("unset")) {
 					currentTransaction.unset(database, Transactions.transactions, temp[1]);
 
+					/* Auto-commit if not in transaction block */
 					if (Transactions.depth() == 0) {
 						Transactions.transactions.push(currentTransaction);
 						Transactions.commit();
@@ -90,9 +91,12 @@ public class Main {
 				currentTransaction = Transactions.begin(currentTransaction);
 			} else if (temp[0].equals("rollback")) {
 				Transaction tempTransaction = Transactions.rollback();
+
 				if (tempTransaction == null) {
+					// Not in a transaction block
 					System.out.println("NO TRANSACTION");
 				} else {
+					/* In a transaction, restore previous level transaction */
 					currentTransaction = tempTransaction;
 				}
 			} else if (temp[0].equals("commit")) {
