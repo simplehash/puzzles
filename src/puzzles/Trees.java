@@ -1,14 +1,14 @@
 package puzzles;
 
 public class Trees {
-	public static boolean isSymmetric(Node n) {
+	public static boolean isSymmetric(TreeNode n) {
 		if (n == null) {
 			return true;
 		}
 		return isSymmetric(n.left(), n.right());
 	}
 
-	private static boolean isSymmetric(Node left, Node right) {
+	private static boolean isSymmetric(TreeNode left, TreeNode right) {
 		if (left == null && right == null) {
 			return true;
 		}
@@ -18,7 +18,7 @@ public class Trees {
 		return false;
 	}
 
-	public static boolean checkBST(Node n) {
+	public static boolean checkBST(TreeNode n) {
 		/*
 		 * Checks that a tree is a binary search tree. Starts with the root and
 		 * the widest valid value interval possible, then slowly converges as
@@ -28,12 +28,12 @@ public class Trees {
 		return checkBST(n, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	private static boolean checkBST(Node n, int min, int max) {
+	private static boolean checkBST(TreeNode n, int min, int max) {
 		if (n == null) {
 			return true;
 		}
 
-		Node left = n.left();
+		TreeNode left = n.left();
 		boolean leftResult = true;
 		if (left != null) {
 			leftResult = false;
@@ -42,7 +42,7 @@ public class Trees {
 			}
 		}
 
-		Node right = n.right();
+		TreeNode right = n.right();
 		boolean rightResult = true;
 		if (right != null) {
 			rightResult = false;
@@ -53,14 +53,14 @@ public class Trees {
 		return leftResult && rightResult;
 	}
 
-	public static Node lowestCommonAncestor(Node node, int v1, int v2) {
+	public static TreeNode lowestCommonAncestor(TreeNode node, int v1, int v2) {
 		// LCA search for generic binary trees
 		if (node == null || node.value() == v1 || node.value() == v2) { // Found
 			// one!
 			return node;
 		} else {
-			Node leftTree = lowestCommonAncestor(node.left(), v1, v2);
-			Node rightTree = lowestCommonAncestor(node.right(), v1, v2);
+			TreeNode leftTree = lowestCommonAncestor(node.left(), v1, v2);
+			TreeNode rightTree = lowestCommonAncestor(node.right(), v1, v2);
 			if (leftTree != null && rightTree != null) {
 				// values we want are on both sides of the current node, so the
 				// current node is the LCA
@@ -75,8 +75,8 @@ public class Trees {
 		}
 	}
 
-	public static Node tLCABST(Node node, int v1, int v2) {
-		Node answer = null;
+	public static TreeNode tLCABST(TreeNode node, int v1, int v2) {
+		TreeNode answer = null;
 		if (node == null) {
 			return null;
 		}
@@ -93,13 +93,5 @@ public class Trees {
 			answer = node;
 		}
 		return answer;
-	}
-
-	interface Node {
-		int value();
-
-		Node left();
-
-		Node right();
 	}
 }
