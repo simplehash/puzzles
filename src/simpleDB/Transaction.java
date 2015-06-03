@@ -45,7 +45,8 @@ public class Transaction {
 		return database.get(key);
 	}
 
-	public void set(String key, String value, Stack<Transaction> transactions, Map<String, String> db, Map<String, Integer> countMap) {
+	public void set(String key, String value, Stack<Transaction> transactions, Map<String, String> db,
+			Map<String, Integer> countMap) {
 		/*
 		 * Set: push the command on the stack for easy rollback/commit, put the
 		 * addition into the cache, increment cached value count
@@ -183,7 +184,7 @@ public class Transaction {
 		return String.valueOf(current + permanent);
 	}
 
-	public void commit(Map<String, String> database, Map<String, Integer> valueMap, Set<String> ignoredKeys) throws Exception {
+	public void commit(Map<String, String> database, Map<String, Integer> valueMap, Set<String> ignoredKeys) {
 		/*
 		 * Because commands are stored in a stack (LIFO), once a key is actioned
 		 * upon we can ignore it for all future occurrences
@@ -200,12 +201,10 @@ public class Transaction {
 					value = commandArray[2];
 				}
 
-				if (command.equals("set") || command.equals("unset")) {
-					if (command.equals("set")) {
-						database.put(key, value);
-					} else {
-						database.remove(key);
-					}
+				if (command.equals("set")) {
+					database.put(key, value);
+				} else if (command.equals("unset")) {
+					database.remove(key);
 				}
 			}
 		}
