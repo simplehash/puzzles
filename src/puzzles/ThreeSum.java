@@ -1,10 +1,10 @@
 package puzzles;
 
 public class ThreeSum {
-	public static int[] find(int[] numbers, int sum) {
-		if (numbers != null) {
-			/*
-			 * This algorithm works by placing three pointers, i, j, and k at
+    public static int[] find(int[] numbers, int sum) {
+        if (numbers != null) {
+            /*
+             * This algorithm works by placing three pointers, i, j, and k at
 			 * various points in the array. i starts off at the beginning and
 			 * slowly works its way to the end. k points to the very last
 			 * element. j points to where i has started at. We iteratively try
@@ -29,21 +29,21 @@ public class ThreeSum {
 			 * performing a fast Fourier transform, but that's beyond the scope
 			 * of this answer.
 			 */
-			for (int i = 0; i < numbers.length - 2; i++) {
-				int j = i + 1;
-				int k = numbers.length - 1;
-				while (j <= k) {
-					int currentSum = numbers[i] + numbers[j] + numbers[k];
-					if (currentSum == sum) {
-						return new int[] { numbers[i], numbers[j], numbers[k] };
-					} else if (currentSum > sum) {
-						k--;
-					} else if (currentSum < sum) {
-						j++;
-					}
-				}
-			}
-		}
-		return null;
-	}
+            for (int i = 0; i < numbers.length - 2; i++) {
+                int j = i + 1;
+                int k = numbers.length - 1;
+                while (j <= k) {
+                    int currentSum = numbers[i] + numbers[j] + numbers[k];
+                    if (currentSum == sum) {
+                        return new int[]{numbers[i], numbers[j], numbers[k]};
+                    } else if (currentSum > sum) {
+                        k--;
+                    } else if (currentSum < sum) {
+                        j++;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }
