@@ -1,9 +1,9 @@
 package puzzles;
 
 public interface TreeNode {
-    int value();
+	int value();
 
-    TreeNode left();
+	TreeNode left();
 
-    TreeNode right();
+	TreeNode right();
 }

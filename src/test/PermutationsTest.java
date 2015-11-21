@@ -18,11 +18,10 @@ public class PermutationsTest {
 		assertEquals(24, p.getCount());
 	}
 
-	/*@Test
-	public void nullString() throws Exception {
-		exception.expect(Exception.class);
-		p = new Permutations(null);
-	}*/
+	/*
+	 * @Test public void nullString() throws Exception {
+	 * exception.expect(Exception.class); p = new Permutations(null); }
+	 */
 
 	@Test
 	public void oneLetter() throws Exception {
