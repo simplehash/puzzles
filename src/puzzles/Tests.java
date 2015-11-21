@@ -5,7 +5,46 @@ public class Tests {
 	 * Assume all null checks are done
 	 */
 	public static void main(String[] args) {
-		maxProfit(new int[] { 5, 8, 4, 0, 4 });
+		dialPad(3733);
+	}
+
+	private final static String[] dialPad = new String[] { "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv",
+			"wxyz" };
+
+	private static void dialPad(int number) {
+		dialPad("", number + "");
+	}
+
+	private static void dialPad(String letters, String numbers) {
+		if (numbers.isEmpty()) {
+			System.out.println(letters);
+		} else {
+			int currentDigit = Character.getNumericValue(numbers.charAt(0));
+			if (dialPad[currentDigit].isEmpty()) {
+				dialPad(letters, numbers.substring(1, numbers.length()));
+			} else {
+				String possibilities = dialPad[currentDigit];
+				for (int i = 0; i < possibilities.length(); i++) {
+					dialPad(letters + possibilities.charAt(i), numbers.substring(1));
+				}
+			}
+		}
+	}
+
+	private static TreeNode LCA(TreeNode root, int v1, int v2) {
+		if (root == null || root.value() == v1 || root.value() == v2) {
+			return root;
+		}
+
+		TreeNode left = LCA(root.left(), v1, v2);
+		TreeNode right = LCA(root.right(), v1, v2);
+		if (left != null && right != null) {
+			return root;
+		} else if (left != null) {
+			return left;
+		} else {
+			return right;
+		}
 	}
 
 	private static void maxProfit(int[] prices) {
@@ -93,6 +132,10 @@ public class Tests {
 			System.out.println(values[i]);
 		}
 		System.out.println(values[values.length - 1]);
+	}
+	
+	private static void permutations(String word) {
+		permutations("", word);
 	}
 
 	private static void permutations(String prefix, String remainder) {
