@@ -8,6 +8,7 @@ public class ConsecutiveSumEqualTo {
         if (numbers == null) {
             return null;
         }
+        
         List<Integer> answer = new ArrayList<>();
         if (numbers.length > 0) {
             int currentSum = numbers[0];
@@ -17,11 +18,9 @@ public class ConsecutiveSumEqualTo {
                 if (currentSum == sum) {
                     break;
                 } else if (currentSum > sum) {
-                    sum -= numbers[first];
-                    first++;
+                    sum -= numbers[first++];
                 } else if (currentSum < sum) {
-                    last++;
-                    sum += numbers[last];
+                    sum += numbers[++last];
                 }
             }
         }
