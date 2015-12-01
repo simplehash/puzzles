@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Practice {
 	public static void main(String[] args) {
-		System.out.println("a".compareTo("b"));
+		System.out.println("hey this is fred".replace(" ", "%20"));
 	}
 
 	private static int letterCombos(int[] numbers) {
