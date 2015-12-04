@@ -53,6 +53,16 @@ public class Trees {
 		return leftResult && rightResult;
 	}
 
+	private static boolean checkBSTShorter(TreeNode n, int min, int max) {
+		if (n == null) {
+			return true;
+		}
+		if (n.value() <= max && n.value() >= min) {
+			return checkBSTShorter(n.left(), min, n.value()) && checkBSTShorter(n.right(), n.value(), max);
+		}
+		return false;
+	}
+
 	public static TreeNode lowestCommonAncestor(TreeNode node, int v1, int v2) {
 		// LCA search for generic binary trees
 		if (node == null || node.value() == v1 || node.value() == v2) { // Found
