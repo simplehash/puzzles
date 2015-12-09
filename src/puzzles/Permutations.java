@@ -12,15 +12,14 @@ public class Permutations {
 	}
 
 	private void permutate(String word, String remainingLetters) {
-		int length = remainingLetters.length();
-		if (length == 0) {
+		if (remainingLetters.isEmpty()) {
 			System.out.println(word);
 			count++;
-		} else {
-			for (int i = 0; i < length; i++) {
-				permutate(word + remainingLetters.charAt(i),
-						remainingLetters.substring(0, i) + remainingLetters.substring(i + 1));
-			}
+			return;
+		}
+		for (int i = 0; i < remainingLetters.length(); i++) {
+			permutate(word + remainingLetters.charAt(i),
+					remainingLetters.substring(0, i) + remainingLetters.substring(i + 1));
 		}
 	}
 
