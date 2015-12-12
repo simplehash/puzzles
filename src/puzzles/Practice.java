@@ -1,13 +1,11 @@
 package puzzles;
 
-import java.util.*;
-
 public class Practice {
 	public static void main(String[] args) {
 		System.out.println("hey this is fred".replace(" ", "%20"));
 	}
 
-	private static int letterCombos(int[] numbers) {
+	public static int letterCombos(int[] numbers) {
 		int possibilities = 0;
 		for (int i = 0; i < numbers.length; i++) {
 			int currentNumber = numbers[i];
