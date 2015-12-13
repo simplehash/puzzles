@@ -53,7 +53,7 @@ public class Trees {
 		return leftResult && rightResult;
 	}
 
-	private static boolean checkBSTShorter(TreeNode n, int min, int max) {
+	public static boolean checkBSTShorter(TreeNode n, int min, int max) {
 		if (n == null) {
 			return true;
 		}
