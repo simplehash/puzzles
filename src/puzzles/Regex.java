@@ -31,9 +31,9 @@ public class Regex {
 		if (pattern.length() >= 2 && pattern.charAt(1) == '*') {
 			return regex(pattern.substring(2), word)
 					|| (isMatch(pattern.charAt(0), word.charAt(0)) && regex(pattern, word.substring(1)));
-		} else {
-			return isMatch(pattern.charAt(0), word.charAt(0)) && regex(pattern.substring(1), word.substring(1));
 		}
+		return isMatch(pattern.charAt(0), word.charAt(0)) && regex(pattern.substring(1), word.substring(1));
+
 	}
 
 	private static boolean isMatch(char pattern, char word) {
